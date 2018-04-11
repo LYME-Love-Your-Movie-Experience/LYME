@@ -18,16 +18,63 @@
 
   <!--Pull in the jQuery library--> 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+
   
 </head>
 
-<body>
+<body class="cyan lighten-3">
+  <nav>
+    <div class="nav-wrapper red lighten-1">
+      <a href="#" class="brand-logo">Logo</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Creators</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+  </nav>
 
+  <br>
+
+  <div class="container">
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="first_name" type="text" class="validate">
+            <label for="first_name">First Name</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="last_name" type="text" class="validate">
+            <label for="last_name">Last Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="email" type="text" class="validate">
+            <label for="email">Email</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="age" type="text" class="validate">
+            <label for="age">Age</label>
+          </div>
+        </div>
+      </form>
+    </div>  
 	<!-- New User Account Creation Page -->
+    <div class="row">
+      <div class="col s12 center-align" id="theatre-preferences">
+        <h3>Theatre Amenities Preferences</h3>
+      </div>
 
-
-<!--JavaScript at end of body for optimized loading-->
-  <script type='text/javascript' src="assets/javascript/app.js"></script>
+      <div class="col s12 center-align" id="movie-preferences">
+        <h3>Personal Movie Preferences</h3>
+      </div>
+    </div>
+  </div>
+  <!--JavaScript at end of body for optimized loading-->
+  <script type='text/javascript' src="assets/javascript/newuser.js"></script>
 
 </body>
 </html>

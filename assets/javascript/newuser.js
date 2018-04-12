@@ -43,6 +43,12 @@ $(document).ready(function(){
 
     // database.ref().push{
 
+      // name: name
+      // email: email
+      // age: age
+      // city: city
+      // state: state
+
     // }
   })
 
@@ -77,7 +83,7 @@ $(document).ready(function(){
   }
 })
 
-//AJAX Call to AMC to GET list of Theaters by City and State
+//AJAX Call to AMC to GET list of Theaters by City and State (set item.id and item.longName of theater)
 var queryURL = "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/";
 
 $.ajax({
@@ -94,6 +100,7 @@ $.ajax({
          }
       });
 
+//AJAX GET call to AMC by theater ID to pull Prefered Experience (set attributes.item)
 $.ajax({
          url: queryURL + "theatres/2325",
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},

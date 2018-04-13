@@ -25,12 +25,17 @@ $.ajax({
          success: function(response) { 
             console.log(response);
             console.log(response.Runtime);
+            var divContainer = $('<div>');
             $.each(response._embedded.movies,function(index,item){
+              var image = $('<img>')
+              image.attr('src', item.media.posterDynamic)
+              divContainer.append(image)
               console.log(item.id);
               console.log(item.name);
               console.log(item.media.posterDynamic);
 
             });
+            $('body').append(divContainer)
          }
       });
 

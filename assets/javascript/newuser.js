@@ -12,11 +12,13 @@ firebase.initializeApp(config);
 var database = firebase.database()
 
 class user{
-  constructor(name, age, email, preferences){
+  constructor(name, age, email, preferences, city, state){
     this.name = name;
     this.age = age;
     this.email = email;
     this.preferences = preferences;
+    this.city = city;
+    this.state = state;
   }
 }
 
@@ -24,6 +26,8 @@ $(document).ready(function(){
   var name = ''
   var email = ''
   var age = ''
+  var city = ''
+  var state = ''
   var zipcode = 00000
 
   //Customer preferences
@@ -38,6 +42,12 @@ $(document).ready(function(){
     event.preventDefault()
 
     // database.ref().push{
+
+      // name: name
+      // email: email
+      // age: age
+      // city: city
+      // state: state
 
     // }
   })
@@ -72,3 +82,35 @@ $(document).ready(function(){
     }
   }
 })
+
+//AJAX Call to AMC to GET list of Theaters by City and State (set item.id and item.longName of theater)
+var queryURL = "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/";
+
+$.ajax({
+         url: queryURL + "theatres?state=california&city=san-francisco",
+         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+         type: "GET",
+         success: function(response) { 
+            console.log(response);
+            console.log(response.Runtime);
+            $.each(response._embedded.theatres,function(index,item){
+              console.log(item.id);
+              console.log(item.longName);
+            });
+         }
+      });
+
+//AJAX GET call to AMC by theater ID to pull Prefered Experience (set attributes.item)
+$.ajax({
+         url: queryURL + "theatres/2325",
+         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+         type: "GET",
+         success: function(response) { 
+            console.log(response);
+            console.log(response.Runtime);
+            $.each(response.attributes,function(index,item){
+              console.log(item.code);
+            });
+         }
+      });
+

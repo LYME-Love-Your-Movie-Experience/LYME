@@ -2,40 +2,94 @@
 <html lang="en-us">
 <head>
   <title>Upcoming Movies</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
-
-  <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-
-  <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
   
-  <!--Let browser know website is optimized for mobile-->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
 
-  <!--Reference our localized modifications to Materialize CDN-->  
-  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
- 
- <!--Pull in the jQuery library--> 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <!-- Compiled and minified CSS -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+   
+   <!--Let browser know website is optimized for mobile-->
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+   <!-- Reference google fonts for specific icons -->
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+   <!--Reference our localized modifications to Materialize CDN-->  
+   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
   
-  <!-- JavaScript for Email messages -->
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script type="text/javascript">
-     (function(){
-        emailjs.init("user_g7pI4LNK7QgZ47o2yTrjS");
-     })();</script>
+  <!--Pull in the jQuery library--> 
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  
 </head>
 
 <body>
+  
+  <body class="grey darken-4">
+    <nav>
+      <div class="nav-wrapper green accent-4">
+        <img class="lime-nav" src="assets/images/lime_front.png" width="45px" height="45px">
+        <a href="#" class="brand-logo">LYME</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Movies</a></li>
+          <li><a href="#">Account</a></li>
+        </ul>
+      </div>
+    </nav>
+    
+    <div class="container ">
+      <div class="row">
+        <div class="col s10 push-s1 grey-text text-lighten-5">
+          <h4>Account Details</h4>
+        </div>  
+      </div>
+      <div class="row">
+        <div class="col s4 push-s1 grey-text text-lighten-5">
+          <img class="account-placeholder" src="assets/images/account_placeholder.png" width="150px" height="150px">
+        </div>  
+        <div class="input-field col s8">
+          <input placeholder="Placeholder" id="first_name" type="text" class="validate">
+          <label for="first_name">First Name</label>
+        </div>
+        <div class="input-field col s8">
+          <input placeholder="Placeholder" id="last_name" type="text" class="validate">
+          <label for="last_name">Last Name</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+          <input placeholder="Placeholder" id="email" type="email" class="validate">
+          <label for="email">Email</label>
+        </div>
+      </div>      
+      <div class="row">
+        <div class="col s12 grey-text text-lighten-5">
+          <h5>Preferences</h5>
+        </div>
+        <div class="input-field col s8 grey-text text-lighten-5">
+          <select>
+            <option value="" disabled selected>Choose your option</option>
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <option value="3">Option 3</option>
+          </select>
+        </div>
+      </div>
 
-	<!-- Create account page -->
 
 
-<!--JavaScript at end of body for optimized loading-->
 
-  <script type='text/javascript' src="assets/javascript/app.js"></script>
+  <!-- Compiled and minified Materialize JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
 
-</script>      
+  <!--JavaScript at end of body for optimized loading-->
+  <script type='text/javascript' src="assets/javascript/movies.js"></script>
+
+  <script>
+    $(document).ready(function(){
+      $('select').formSelect();
+    });
+  </script>
+      
 </body>
 </html>

@@ -25,17 +25,60 @@ $.ajax({
          success: function(response) { 
             console.log(response);
             console.log(response.Runtime);
-            var divContainer = $('<div>');
             $.each(response._embedded.movies,function(index,item){
+              var newRow = $('<div>').addClass("row")
+              var emptyCol = $('<div>').addClass("col s1")
+              var emptyRow = $('<div>').addClass("row")
+              var imgContainer = $('<div>').addClass("col s3");
+              var textContainer = $('<div>').addClass("col s6");
+              
+              var theaterListing = $('<div>').addClass("row")
+              var theaterPreferencesContainer = $('<div>').addClass("row")
+              
+              var reviewHeader = $('<div>').addClass("row")
+              var criticReview = $('<div>').addClass("col s4")
+              var userReview = $('<div>').addClass("col s4")
               var image = $('<img>')
+              image.height(300).width(210)
               image.attr('src', item.media.posterDynamic)
-              divContainer.append(image)
+              imgContainer.append('<h5>' + item.name + '</h5>')
+              imgContainer.append(image)
+             
+              criticReview.html("Critic Review").addClass("center-align")
+              userReview.html("User Review").addClass("center-align")
+              reviewHeader.html("<h6>Reviews</h6>")
+              reviewHeader.append(criticReview)
+              reviewHeader.append(userReview)
+              imgContainer.append(reviewHeader)
+
+              for (var i = 1; i < 4; i++) {
+                var individualTheater = $('<div>').addClass("col s4")
+                individualTheater.html("<h5>Theater " + i + "</h5>")
+                theaterListing.append(individualTheater)
+              } 
+              
+              for (var i = 1; i < 4; i++) {
+                var theaterPreferencesBucket = $('<div>').addClass("col s4")
+                var purchaseButton = $('<input type="button" value="Purchase"/>')
+                theaterPreferencesBucket.text("Preferences Listing " + i)
+                theaterPreferencesBucket.append(purchaseButton)
+                theaterPreferencesContainer.append(theaterPreferencesBucket)
+              } 
+
+              textContainer.append(emptyRow)
+              textContainer.append(theaterListing).addClass("center-align")
+              textContainer.append(theaterPreferencesContainer).addClass("center-align")
+
+              newRow.append(emptyCol)
+              newRow.append(imgContainer)
+              newRow.append(textContainer)
+
               console.log(item.id);
               console.log(item.name);
               console.log(item.media.posterDynamic);
+              $('.movie-container').append(newRow)
 
             });
-            $('body').append(divContainer)
          }
       });
 
@@ -86,3 +129,4 @@ function attachScore(scoreParagraph, filmName){
       scoreParagraph.text("Score : " + parseInt(filmScore));
     }
   });
+  }

@@ -58,3 +58,31 @@ $.ajax({
 
 //Set Ajax call for Metacritic Review serach by movie title
 
+var metaCriticQueryURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/search/";
+var metaCriticMovieURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/movie";
+
+function attachScore(scoreParagraph, filmName){
+  scoreParagraph.attr('id',"metacritic-score");
+  // Need to sanitize the input, make it all lowercase
+  var queryFilmName = filmName.toLowerCase();
+  // Also sanitize by replacing spaces with -
+  queryFilmName.replace(/ /g , "-")
+  var filmScore = 0;
+
+  $.ajax({
+    url: metaCriticQueryURL + "/" + queryFilmName + "/movie?limit=20",
+     // url: metaCriticQueryURL + "/" + filmName,
+    headers: {
+      "X-Mashape-Key": "UtlmLLXlvBmshzFE1DlVAFtq0Yp3p1z5KLqjsnTtLyKhWYrWgd",
+      "Accept": "application/json",
+      "Cache-Control": "no-cache"
+    },
+    type: "GET",
+    success: function(response) { 
+      getthatresponse = response;
+      // console.log(response);
+      filmScore = response[0].SearchItems[0].Rating.CriticRating;
+      console.log("Score : " + filmScore)
+      scoreParagraph.text("Score : " + parseInt(filmScore));
+    }
+  });

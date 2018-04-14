@@ -18,19 +18,22 @@
 
   <!--Pull in the jQuery library--> 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  
+  <!-- Firebase JS linking -->
   <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
 
   
 </head>
 
-<body class="cyan lighten-3">
+<body class="grey darken-4">
   <nav>
-    <div class="nav-wrapper red lighten-1">
-      <a href="#" class="brand-logo">Logo</a>
+    <div class="nav-wrapper green accent-4">
+      <img class="lime-nav" src="assets/images/lime_front.png" width="45px" height="45px">
+      <a href="#" class="brand-logo">LYME - Love Your Movie Experience</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="#">About</a></li>
-        <li><a href="#">Creators</a></li>
-        <li><a href="#">Support</a></li>
+        <li><a href="https://lyme-love-your-movie-experience.github.io/LYME/">Home</a></li>
+        <li><a href="file:///C:/Users/scott/Desktop/cbc/homework/LYME/movies.html">Movies</a></li>
+        <li><a href="file:///C:/Users/scott/Desktop/cbc/homework/LYME/account.html">Account</a></li>
       </ul>
     </div>
   </nav>
@@ -42,22 +45,22 @@
       <form class="col s12">
         <div class="row">
           <div class="input-field col s6">
-            <input id="first_name" type="text" class="validate">
-            <label for="first_name">First Name</label>
+            <input id="name" type="text" class="validate">
+            <label for="name">First Name</label>
           </div>
-          <div class="input-field col s6">
-            <input id="last_name" type="text" class="validate">
-            <label for="last_name">Last Name</label>
-          </div>
-        </div>
-        <div class="row">
           <div class="input-field col s6">
             <input id="email" type="text" class="validate">
             <label for="email">Email</label>
           </div>
+        </div>
+        <div class="row">
           <div class="input-field col s6">
-            <input id="age" type="text" class="validate">
-            <label for="age">Age</label>
+            <input id="city" type="text" class="validate">
+            <label for="city">City</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="state" type="text" class="validate">
+            <label for="state">State</label>
           </div>
         </div>
         <div class="row">
@@ -80,6 +83,10 @@
 
       <div class="col s12 center-align" id="movie-preferences">
         <h3>Personal Movie Preferences</h3>
+      </div>
+
+      <div class="col s2 center-align offset-s5 ">
+          <a class="waves-effect waves-light btn" id="submit">Submit</a>
       </div>
     </div>
   </div>

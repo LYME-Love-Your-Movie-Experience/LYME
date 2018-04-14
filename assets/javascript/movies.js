@@ -52,6 +52,9 @@ $.ajax({
               console.log(item.code);
 
             });
-            console.log(response.purchaseUrl)
+            console.log(response.purchaseUrl) 
          }
       });
+
+//Set Ajax call for Metacritic Review serach by movie title
+

@@ -173,3 +173,70 @@ $(document).ready(function(){
     }
   })
 })
+
+// TODO: update db reference with Nate's session data later
+var ref = database.ref("/users/-LA4P1GT2KZM5tiRMNPI");
+
+// Build this URL with the user's data
+var userURL = ""
+
+// Create AMC API call to get list of AMC theaters
+// Example of a theater query "theatres?state=california&city=san-francisco"
+function buildAMCMovieQuery(city, state){
+  var theaterQuery = "theatres?"
+
+  var queryState = convertRegion(state, TO_NAME);
+  queryState = queryState.toLowerCase();
+  queryState = queryState.replace(/ /g , "-");
+
+  var userCity = city.toLowerCase();
+  userCity = userCity.replace(/ /g , "-");
+
+  theaterQuery += "state=" + queryState;
+  theaterQuery += "&city=" + userCity;
+
+  console.log(theaterQuery);
+  return theaterQuery;
+}
+
+var queryURL = "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/";
+
+// Should load user's data here, from ref var above
+ref.on("value", function(snapshot) {
+  console.log(snapshot.val());
+  userURL = buildAMCMovieQuery(snapshot.val().city,snapshot.val().state)
+
+  //AJAX Call to AMC to GET list of Theaters by City and State (set item.id and item.longName of theater)
+  $.ajax({
+    // url: queryURL + "theatres?state=california&city=san-francisco",
+    url: queryURL + userURL,
+    headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+    type: "GET",
+    success: function(response) { 
+      console.log(response);
+      console.log(response.Runtime);
+      $.each(response._embedded.theatres,function(index,item){
+        console.log(item.id);
+        console.log(item.longName);
+      });
+    }
+  });
+
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
+});
+
+
+//AJAX GET call to AMC by theater ID to pull Prefered Experience (set attributes.item)
+$.ajax({
+  url: queryURL + "theatres/2325",
+  headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+  type: "GET",
+  success: function(response) { 
+    console.log(response);
+    console.log(response.Runtime);
+    $.each(response.attributes,function(index,item){
+      console.log(item.code);
+    });
+  }
+});

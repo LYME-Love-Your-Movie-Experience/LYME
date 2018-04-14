@@ -99,10 +99,39 @@ $.ajax({
          }
       });
 
-//Set Ajax call for Metacritic Review serach by movie title
+//Generate Link to purchase tickets at website
+
+$.ajax({
+         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/4145/showtimes/4-14-18",
+         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+         type: "GET",
+         success: function(response) { 
+            console.log(response);
+            console.log(response.Runtime);
+            $.each(response._embedded.showtimes,function(index,item){
+              console.log(item.attributes.code);
+              console.log(item.movieId);
+            });
+         }
+      });
+
+//https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/2018-04-14/amc-metreon-16/all
+var movieId
+var movieTitle
+var todaysDate
+var theatreLongName
+var href
+
+
+href = "http://www.amctheaters.com/movies/" + "movieTitle" + "-" + "movieId" + "/showtimes" +
+       "movieTitle" + "-" + "movieId" + "todaysDate" + "theatreLongName" + "/all"
+
+//Original Code
 
 var metaCriticQueryURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/search/";
 var metaCriticMovieURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/movie";
+
+//filmName = Ready Player One
 
 function attachScore(scoreParagraph, filmName){
   scoreParagraph.attr('id',"metacritic-score");
@@ -127,6 +156,6 @@ function attachScore(scoreParagraph, filmName){
       filmScore = response[0].SearchItems[0].Rating.CriticRating;
       console.log("Score : " + filmScore)
       scoreParagraph.text("Score : " + parseInt(filmScore));
-    }
+      }
   });
-  }
+}

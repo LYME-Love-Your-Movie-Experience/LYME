@@ -1,0 +1,33 @@
+.nav-wrapper {
+	position: relative;
+}
+
+.container {
+	position: relative;
+}
+
+.lime-nav {
+	position: absolute;
+	left: 15px;
+	top: 10px;
+}
+
+.brand-logo {
+	position: absolute;
+	left: 70px;
+}
+
+.account-placeholder {
+	border-style: solid;
+	border-color: grey;
+	border-width: 1px;
+	padding: 20px;
+}
+
+/*.dropdown-content li > a, .dropdown-content li > span {
+    color: #01bf05 !important;
+}*/
+
+ul.dropdown-content.select-dropdown li span {
+    color: #01bf05;
+}

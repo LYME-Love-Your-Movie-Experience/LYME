@@ -7,24 +7,26 @@
 
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-
-  <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
   
   <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Reference google fonts for specific icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!--Reference our localized modifications to Materialize CDN-->  
   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
  
  <!--Pull in the jQuery library--> 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 </head>
 
 <body class="grey darken-4">
   <nav>
-    <div class="nav-wrapper green accent-3">
-      <a href="#" class="brand-logo">LYME</a>
+    <div class="nav-wrapper green accent-4">
+      <img class="lime-nav" src="assets/images/lime_front.png" width="45px" height="45px">
+      <a href="#" class="brand-logo">LYME - Love Your Movie Experience</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a href="#">Home</a></li>
         <li><a href="#">Movies</a></li>
@@ -32,27 +34,60 @@
       </ul>
     </div>
   </nav>
+  
 
   <div class="container ">
     <div class="row">
       <div class="col s10 push-s1 grey-text text-lighten-5">
-        <h1 class="center-align">Love Your Movie Experience.</h1>
+        <br>
+        <center><img class="lime-body" src="assets/images/lime_side.png" width="150px" height="150px"></center>
+        <h1 class="center-align">The Movies You Crave.</h1>
+        <h1 class="center-align">The Amenities You Deserve.</h1>
       </div>  
     </div>
     <div class="row">
       <div class="col s10 push-s1 grey-text text-lighten-5">
-        <h1 class="center-align">The Movies You Crave. The Comfort You Deserve.</h1>
-        <p class="flow text center-align">We are here to change how you search for movies.  Find movies in your area that are in IMAX, or with Dolby Digital, or perhaps where the theater serves your favorite concession type.  Stop compromising, and start enjoying movie experiences that match only your specific needs.
+        <hr>
+        <p class="flow text center-align">We are here to change how you search for movies.  Find movies in your area that are in IMAX, or with Dolby Digital, or perhaps where the theater serves your favorite concession type.  Stop compromising, and start enjoying movie experiences that match only your specific needs.</p>
+        <hr>
       </div>  
     </div>
     <div class="row">
       <div class="col s2 push-s5 grey-text text-lighten-5">
-        <a class="waves-effect waves-light red lighten-1 btn">Get Started</a>
+        <button data-target="modal1" class="btn modal-trigger red lighten-1 btn">Launch</button>
       </div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal green accent-4">
+      <div class="modal-content grey-text text-lighten-5">
+        <h4>User Sign-in</h4>
+        <p>Existing Users - Log in with your email address.</p>
+            <input placeholder="email..." id="first_name" type="text" class="validate">
+            <a class="waves-effect waves-light red lighten-1 btn">Submit</a>
+      </div>
+      <div class="modal-content grey-text text-lighten-5">
+        <p>News User? - Click below to get started!</p>
+        <a class="waves-effect waves-light red lighten-1 btn">Account Creation</a>
+      </div>
+      <div class="modal-footer grey darken-3">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat grey-text text-lighten-5">Close</a>
+      </div>
+    </div>
+
+<!-- Compiled and minified Materialize JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+  
+<!-- Temporary location of javascript for modals until other JS files get further along -->
+  <script>
+    $(document).ready(function(){
+      $('.modal').modal();
+    });
+  </script>
+
 <!--JavaScript at end of body for optimized loading-->
-  <script type='text/javascript' src="assets/javascript/app.js"></script>
+  <script type='text/javascript' src="assets/javascript/movies.js"></script>
+
 
 </body>
 </html>

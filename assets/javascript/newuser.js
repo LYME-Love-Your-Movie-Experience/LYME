@@ -61,40 +61,7 @@ $(document).ready(function(){
     var city = $('#city').val().trim()
     var state = $('#state').val().trim().toUpperCase()
 
-    //Check all fields are populated, if not run exception functions, add to exception counter
-    if(name === ''){
-      nameEmptyException()
-      exceptionCount++
-    }
-    if(email === ''){
-      emailEmptyException()
-      exceptionCount++
-    }
-    if(city ===''){
-      cityEmptyException()
-      exceptionCount++
-    }
-    if(state === ''){
-      stateEmptyException()
-      exceptionCount++
-    }
-
-    //Check for valid state code, if not run exception, add to exception counter 
-    if(stateArr.indexOf(state) < 0){
-      citateException()
-      exceptionCount++
-    }
-
-    if(exceptionCount > 0){
-      exceptionCount = 0
-      return
-    }
-
-    //Make newUser object from inputs
-    var newUser = new user(name, email, city, state, preferences)
-
-    //Push newUser object to firebase users node
-    database.ref('/users/').push(newUser)
+    // }
   })
 
   function nameEmptyException(){

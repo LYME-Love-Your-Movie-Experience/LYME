@@ -109,8 +109,8 @@ $.ajax({
             console.log(response);
             console.log(response.Runtime);
             $.each(response._embedded.showtimes,function(index,item){
+              console.log(item.movieId)
               console.log(item.attributes.code);
-              console.log(item.movieId);
             });
          }
       });

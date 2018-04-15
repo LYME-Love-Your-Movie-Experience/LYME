@@ -31,3 +31,30 @@
 ul.dropdown-content.select-dropdown li span {
     color: #01bf05;
 }
+
+.theater-pref-div {
+	position: relative;
+	height: 300px;
+	margin-right: 5px;
+}
+
+.purchase-btn {
+	position: absolute;
+	bottom: 10px;
+	left: 60px;
+}
+
+.kick-right {
+	padding-left: 15px;
+}
+
+.reviews-div {
+	font-size: 12px;
+	height: 50px;
+	margin-right: 5px;
+}
+
+.movie-page-hr-break {
+	width: 80%;
+	opacity: .25;
+}

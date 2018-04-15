@@ -30,36 +30,37 @@ $.ajax({
               var emptyCol = $('<div>').addClass("col s1")
               var emptyRow = $('<div>').addClass("row")
               var imgContainer = $('<div>').addClass("col s3");
-              var textContainer = $('<div>').addClass("col s6");
+              var textContainer = $('<div>').addClass("col s8");
+              var mpaaRating = $('<div>').addClass("row kick-right").append('Rating:' + item.mpaaRating)
               
               var theaterListing = $('<div>').addClass("row")
               var theaterPreferencesContainer = $('<div>').addClass("row")
               
-              var reviewHeader = $('<div>').addClass("row")
-              var criticReview = $('<div>').addClass("col s4")
-              var userReview = $('<div>').addClass("col s4")
+              var reviewHeader = $('<div>').addClass("row kick-right")
+              var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
+              var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
               var image = $('<img>')
               image.height(300).width(210)
               image.attr('src', item.media.posterDynamic)
               imgContainer.append('<h5>' + item.name + '</h5>')
               imgContainer.append(image)
+              imgContainer.append(mpaaRating)
              
               criticReview.html("Critic Review").addClass("center-align")
               userReview.html("User Review").addClass("center-align")
-              reviewHeader.html("<h6>Reviews</h6>")
               reviewHeader.append(criticReview)
               reviewHeader.append(userReview)
               imgContainer.append(reviewHeader)
 
               for (var i = 1; i < 4; i++) {
-                var individualTheater = $('<div>').addClass("col s4")
+                var individualTheater = $('<div>').addClass("col s3")
                 individualTheater.html("<h5>Theater " + i + "</h5>")
                 theaterListing.append(individualTheater)
               } 
               
               for (var i = 1; i < 4; i++) {
-                var theaterPreferencesBucket = $('<div>').addClass("col s4")
-                var purchaseButton = $('<input type="button" value="Purchase"/>')
+                var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
+                var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn purchase-btn")
                 theaterPreferencesBucket.text("Preferences Listing " + i)
                 theaterPreferencesBucket.append(purchaseButton)
                 theaterPreferencesContainer.append(theaterPreferencesBucket)
@@ -72,6 +73,7 @@ $.ajax({
               newRow.append(emptyCol)
               newRow.append(imgContainer)
               newRow.append(textContainer)
+              newRow.append('<hr class="movie-page-hr-break">')
 
               console.log(item.id);
               console.log(item.name);

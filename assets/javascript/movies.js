@@ -40,7 +40,7 @@ $.ajax({
               var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
               var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
               var image = $('<img>')
-              image.height(300).width(210)
+              image.height(300).width(200)
               image.attr('src', item.media.posterDynamic)
               imgContainer.append('<h5>' + item.name + '</h5>')
               imgContainer.append(image)
@@ -60,7 +60,7 @@ $.ajax({
               
               for (var i = 1; i < 4; i++) {
                 var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
-                var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn purchase-btn")
+                var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
                 theaterPreferencesBucket.text("Preferences Listing " + i)
                 theaterPreferencesBucket.append(purchaseButton)
                 theaterPreferencesContainer.append(theaterPreferencesBucket)
@@ -92,6 +92,7 @@ $.ajax({
          type: "GET",
          success: function(response) { 
             console.log(response);
+            console.log(response.purchaseUrl)
             console.log(response.Runtime);
             $.each(response.attributes,function(index,item){
               console.log(item.code);
@@ -133,7 +134,7 @@ href = "http://www.amctheaters.com/movies/" + "movieTitle" + "-" + "movieId" + "
 var metaCriticQueryURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/search/";
 var metaCriticMovieURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/movie";
 
-//filmName = Ready Player One
+// var filmName = "Ready Player One"
 
 function attachScore(scoreParagraph, filmName){
   scoreParagraph.attr('id',"metacritic-score");

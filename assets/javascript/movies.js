@@ -48,6 +48,7 @@ $.ajax({
              
               criticReview.html("Critic Review").addClass("center-align")
               userReview.html("User Review").addClass("center-align")
+              attachScore(criticReview, userReview, item.name)
               reviewHeader.append(criticReview)
               reviewHeader.append(userReview)
               imgContainer.append(reviewHeader)
@@ -105,14 +106,16 @@ $.ajax({
 //Generate Link to purchase tickets at website
 
 $.ajax({
-         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/4145/showtimes/4-14-18",
+         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/4145/showtimes/4-18-18",
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
          type: "GET",
          success: function(response) { 
             console.log(response);
             console.log(response.Runtime);
             $.each(response._embedded.showtimes,function(index,item){
+              console.log("Begin purchasing section here")
               console.log(item.movieId)
+              console.log(item.movieName)
               console.log(item.attributes.code);
             });
          }
@@ -136,17 +139,19 @@ var metaCriticMovieURL = "https://cors-anywhere.herokuapp.com/https://api-marcal
 
 // var filmName = "Ready Player One"
 
-function attachScore(scoreParagraph, filmName){
-  scoreParagraph.attr('id',"metacritic-score");
+function attachScore(criticScore, userScore, filmName){
+  console.log(userScore);
+  criticScore.attr('id',"metacritic-score");
   // Need to sanitize the input, make it all lowercase
   var queryFilmName = filmName.toLowerCase();
   // Also sanitize by replacing spaces with -
-  queryFilmName.replace(/ /g , "-")
-  var filmScore = 0;
+  queryFilmName = queryFilmName.replace(/ /g , "-")
+  var filmScoreNum = 0;
+  var userScoreNum = 0;
 
   $.ajax({
-    url: metaCriticQueryURL + "/" + queryFilmName + "/movie?limit=20",
-     // url: metaCriticQueryURL + "/" + filmName,
+    // url: metaCriticQueryURL + "/" + queryFilmName + "/movie?limit=20",
+     url: metaCriticMovieURL + "/" + queryFilmName,
     headers: {
       "X-Mashape-Key": "UtlmLLXlvBmshzFE1DlVAFtq0Yp3p1z5KLqjsnTtLyKhWYrWgd",
       "Accept": "application/json",
@@ -154,11 +159,15 @@ function attachScore(scoreParagraph, filmName){
     },
     type: "GET",
     success: function(response) { 
-      getthatresponse = response;
-      // console.log(response);
-      filmScore = response[0].SearchItems[0].Rating.CriticRating;
-      console.log("Score : " + filmScore)
-      scoreParagraph.text("Score : " + parseInt(filmScore));
+      // getthatresponse = response;
+      console.log("MetaCritic " + queryFilmName);
+      console.log(response[0].Rating);
+      // filmScoreNum = response[0].SearchItems[0].Rating.CriticRating;
+      filmScoreNum = response[0].Rating.CriticRating;
+      userScoreNum = response[0].Rating.UserRating;
+      // console.log("Score : " + filmScoreNum)
+      criticScore.append(": " + parseInt(filmScoreNum));
+      userScore.append(": " + userScoreNum)
       }
   });
 }

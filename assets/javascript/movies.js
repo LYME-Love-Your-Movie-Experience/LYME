@@ -166,8 +166,8 @@ function attachScore(criticScore, userScore, filmName){
       filmScoreNum = response[0].Rating.CriticRating;
       userScoreNum = response[0].Rating.UserRating;
       // console.log("Score : " + filmScoreNum)
-      criticScore.append(": " + parseInt(filmScoreNum));
-      userScore.append(": " + userScoreNum)
+      criticScore.append("<br><h6>" + parseInt(filmScoreNum) + "/100 </h6>");
+      userScore.append("<br><h6>" + userScoreNum + "/10</h6>")
       }
   });
 }

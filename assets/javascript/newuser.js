@@ -337,7 +337,7 @@ $(document).ready(function(){
 
     label.addClass('active')
     state.css('color', '#00c853')
-    state.val('Please input a valid two character state code')
+    state.val('Please input a valid two character state code') 
   }
 
   function cityStateException(){
@@ -348,4 +348,9 @@ $(document).ready(function(){
     city.css('color', '#00c853')
   }
 
+})
+
+$(document.body).on('click', '#redirect_button', function(event) {
+  event.preventDefault()
+  window.location = 'movies.html'
 })

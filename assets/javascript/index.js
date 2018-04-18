@@ -21,7 +21,7 @@ $.ajax({
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
          type: "GET",
          success: function(response) { 
-            // console.log(response);
+            console.log(response);
             // console.log(response.Runtime);
             $.each(response._embedded.movies,function(index,item){
               var movieID = item.id
@@ -40,7 +40,7 @@ $.ajax({
           }
         })
 $(document).ready(function(){
-      $('.modal').modal();
+    $('#modal1').modal();
 });
 
 $(document.body).on('click', '#submit_button', function(event){
@@ -64,9 +64,13 @@ $(document.body).on('click', '#submit_button', function(event){
     getUser(email)
       .then(function(valid) {
         if (valid) {
-          window.location = 'account.html'
+          window.location = 'movies.html'
           console.log('resolved')
         }
       })
+})
 
+$(document.body).on('click', '#account_creation_btn', function(event) {
+  event.preventDefault()
+  window.location = 'account.html'
 })

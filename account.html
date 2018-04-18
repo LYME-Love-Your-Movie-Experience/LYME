@@ -98,10 +98,28 @@
       </div>
 
       <div class="row">
-        <a id="account-btn-mod" class="waves-effect waves-light red lighten-1 btn save-option">Save Changes</a>
+        <button data-target="success-modal" id="account-btn-mod" class="btn modal-trigger waves-effect waves-light red lighten-1 btn save-option">Save Changes</button>
       </div>
 
+      <div id="success-modal" class="modal green accent-4">
+        <div class="modal-content grey-text text-lighten-5">
+          <h4>Account Successfully Created!</h4>
+          <p>Welcome to LYME!</p>  
+          <p>Let's get started with looking at some movies.  Click the button below to get started.</p>
+          <a href='account.html' id="redirect_button" class="waves-effect waves-light red lighten-1 btn">Onward!</a>
+        </div>
+      </div>
 
+      <div id="help-modal" class="modal green accent-4">
+        <div class="modal-content grey-text text-lighten-5">
+          <h4>Account Creation</h4>
+          <p>Let's get started!</p>  
+          <p>Fill in each field below (including your three preferences) to create your LYME account.</p>
+        </div>
+        <div class="modal-footer grey darken-3">
+          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat grey-text text-lighten-5">Close</a>
+        </div>
+      </div>
 
 
   <!-- Compiled and minified Materialize JavaScript -->
@@ -113,7 +131,10 @@
   <script>
     $(document).ready(function(){
       $('select').formSelect();
-    });
+      $('#success-modal').modal();
+      $('#help-modal').modal();
+      $('#help-modal').modal('open');
+    })
   </script>
       
 </body>

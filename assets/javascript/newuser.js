@@ -21,6 +21,7 @@ class user{
   }
 }
 
+
 $(document).ready(function(){
   var preferences = []
   var preferenceCount = 0
@@ -42,13 +43,33 @@ $(document).ready(function(){
   populatePreferenceButtons(theatrePreferenceArr)
   populatePersonalPreferenceButtons(moviePreferenceArr)
 
+  $(document.body).on('click', '.validate', function(){
+    $(this).val('')
+  })
 
-  //Event handler for database update
-  database.ref('/users/').on('child_added', function(snapshot){
-    var sv = snapshot.val()
+  //Real time update of preferences array as the user clicks the checkboxes
+  $(document.body).on('click', '.preference', function(){
+    var state = ($(this).attr('state') === 'true')
+    var curPref = $(this).siblings('.pref_label').text()
 
-    var key = snapshot.key
-    console.log(key)
+    if(state){
+      preferenceCount--
+
+      var index = preferences.indexOf(curPref)
+      preferences.splice(index,1)
+      $(this).attr('state', false)
+    }else{
+      preferenceCount++
+
+      if(preferenceCount === 4){
+        event.preventDefault()
+        preferenceCount = 3
+        return
+      }
+
+      preferences.push(curPref)
+      $(this).attr('state', true)
+    }
   })
 
   //Event handler for new user submition
@@ -81,42 +102,70 @@ $(document).ready(function(){
 
     //Check for valid state code, if not run exception, add to exception counter 
     if(stateArr.indexOf(state) < 0){
-      citateException()
+      stateCodeException()
       exceptionCount++
     }
 
-    if(exceptionCount > 0){
-      exceptionCount = 0
-      return
+    // Promise
+    var queryAsk = new Promise(
+        function (resolve, reject) {
+            resolve (validateEmail(email))
+    })
+
+    var queryResponse = function () {
+      console.log('Promise runs')
+      queryAsk
+        .then(function (fulfilled) {
+            // if()
+            console.log(fulfilled)
+            exceptionCount++
+
+            if(exceptionCount > 0){
+              exceptionCount = 0
+              return
+            }
+
+            //Make newUser object from inputs
+            var newUser = new user(name, email, city, state, preferences)
+
+            //Clear out all fields
+            $('#name').val('')
+            $('#email').val('')
+            $('#city').val('')
+            $('#state').val('')
+
+            console.log('shouldnt have gotten here', exceptionCount)
+            //Push newUser object to firebase users node, make reference of it
+            var newUserRef = database.ref('/users/').push(newUser)
+
+            //Set local storage key, to the node key in the database, so we can access their preferences later
+            localStorage.key = newUserRef.key
+
+            // window.location = 'movies.html'
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     }
-
-    //Make newUser object from inputs
-    var newUser = new user(name, email, city, state, preferences)
-
-    //Push newUser object to firebase users node
-    database.ref('/users/').push(newUser)
   })
 
-  function nameEmptyException(){
-  
-  }
-
-  function emailEmptyException(){
-  }
-
-  function cityEmptyException(){
-  }
-
-  function stateEmptyException(){
-  }
-
-  function stateCodeException(){
-
-  }
-
-  function cityStateException(){
-
-  }
+  function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    
+    if(re.test(String(email).toLowerCase())){
+        var ref = firebase.database().ref('/users/');
+        ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
+          const response = snapshot.numChildren()
+          console.log("This should be before promise",response)
+          if(response > 0){
+            console.log('returning true')
+            return true
+          }
+          return false  
+        })
+       
+      } 
+    }
 
   function populatePreferenceButtons(array){
     var count = array.length
@@ -148,28 +197,90 @@ $(document).ready(function(){
     }
   }
 
-  //real time update of preferences array as the user clicks the checkboxes
-  $(document.body).on('click', '.preference', function(){
-    var state = ($(this).attr('state') === 'true')
-    var curPref = $(this).siblings('.pref_label').text()
+  function emailExistsException(){
+    var email = $('#email')
+    var label = $('#email-label')
 
-    if(state){
-      preferenceCount--
+    label.addClass('active')
+    email.css('color', '#00c853')
+    email.val('That email address is already linked to another account') 
+  }
 
-      var index = preferences.indexOf(curPref)
-      preferences.splice(index,1)
-      $(this).attr('state', false)
-    }else{
-      preferenceCount++
+  function nameEmptyException(){
+    var name = $('#name')
+    var label = $('#name-label')
 
-      if(preferenceCount === 4){
-        event.preventDefault()
-        preferenceCount = 3
-        return
-      }
+    label.addClass('active')
+    name.css('color', '#00c853')
+    name.val('Please input your name')
+  }
 
-      preferences.push(curPref)
-      $(this).attr('state', true)
-    }
-  })
+  function emailEmptyException(){
+    var email = $('#email')
+    var label = $('#email-label')
+
+    label.addClass('active')
+    email.css('color', '#00c853')
+    email.val('Please input a valid email address')
+  }
+
+  function cityEmptyException(){
+    var city = $('#city')
+    var label = $('#city-label')
+
+    label.addClass('active')
+    city.css('color', '#00c853')
+    city.val('Please input your city of residence')
+  }
+
+  function stateEmptyException(){
+    var state = $('#state')
+    var label = $('#state-label')
+
+    label.addClass('active')
+    state.css('color', '#00c853')
+    state.val('Please input your state of residence')
+  }
+
+  function stateCodeException(){
+    var state = $('#state')
+    var label = $('#state-label')
+
+    label.addClass('active')
+    state.css('color', '#00c853')
+    state.val('Please input a valid two character state code')
+  }
+
+  function cityStateException(){
+    var city = $('#city')
+    var label = $('#city-label')
+
+    label.addClass('active')
+    city.css('color', '#00c853')
+  }
+
+  // function setCookie(key, exdays) {
+  //   console.log('here')
+  //   var d = new Date();
+  //   d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  //   var expires = "expires="+ d.toUTCString();
+  //   document.cookie = "name=" + key
+  // }
+
+  // function getCookie(name) {
+  //   var foo = name + "=";
+  //   var decodedCookie = decodeURIComponent(document.cookie);
+  //   console.log(decodedCookie)
+  //   var ca = decodedCookie.split(';');
+  //   for(var i = 0; i <ca.length; i++) {
+  //       var c = ca[i];
+  //       while (c.charAt(0) == ' ') {
+  //           c = c.substring(1);
+  //       }
+  //       if (c.indexOf(foo) == 0) {
+  //           return c.substring(foo.length, c.length);
+  //       }
+  //   }
+  //   return "";
+  // }
 })

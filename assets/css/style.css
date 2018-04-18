@@ -36,6 +36,10 @@ ul.dropdown-content.select-dropdown li span {
     color: #01bf05;
 }
 
+.validate{
+	color:white;
+}
+
 .theater-pref-div {
 	position: relative;
 	height: 300px;
@@ -95,3 +99,4 @@ ul.dropdown-content.select-dropdown li span {
  	float: right;
  	margin-left: 5px;
  }
+

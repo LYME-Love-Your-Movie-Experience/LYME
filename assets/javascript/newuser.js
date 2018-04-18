@@ -12,8 +12,9 @@ firebase.initializeApp(config);
 var database = firebase.database()
 
 class user{
-  constructor(name, email, city, state, user_preferences){
-    this.name = name;
+  constructor(first_name, last_name, email, city, state, user_preferences){
+    this.firstName = first_name;
+    this.lastName = last_name;
     this.email = email;
     this.city = city;
     this.state = state;
@@ -23,6 +24,8 @@ class user{
 
 
 $(document).ready(function(){
+  // console.log(localStorage.getItem('key'))
+
   var preferences = []
   var preferenceCount = 0
   var exceptionCount = 0
@@ -38,58 +41,121 @@ $(document).ready(function(){
     var stateOption = $('<option>').val(stateArr[i])
     stateOption.text(stateArr[i])
     $(".state-picker").append(stateOption)
+    // console.log('state')
   }
 
   //Customer preference options
-  theatrePreferenceArr = ['IMAX', 'Recliner Seating', 'Love Seats', 'Reserved Seating','Alchohol for Sale','Concession Delivery','3D','Loyalty Cards']
-  moviePreferenceArr = ['Action','Adventure','Animation','Comedy','Documentary','Drama','Fantasy',
-    'Film Festival','Family','Musical','Romantic Comedy','Science Fiction','Suspense','Western']
+  theatrePreferenceArr = ['IMAX','IMAX 3D', 'REALD 3D', 'Reserved Seating', 'Closed Caption', 'Reclining Seats', 'Alcohol']
+  // moviePreferenceArr = ['Action','Adventure','Animation','Comedy','Documentary','Drama','Fantasy',
+  //   'Film Festival','Family','Musical','Romantic Comedy','Science Fiction','Suspense','Western']
 
   //populate preferences buttons
-  populatePreferenceButtons(theatrePreferenceArr)
-  populatePersonalPreferenceButtons(moviePreferenceArr)
+  populateOptions(theatrePreferenceArr)
+  // populatePersonalPreferenceButtons(moviePreferenceArr)
 
   $(document.body).on('click', '.validate', function(){
     $(this).val('')
   })
 
-  //Real time update of preferences array as the user clicks the checkboxes
-  $(document.body).on('click', '.preference', function(){
-    var state = ($(this).attr('state') === 'true')
-    var curPref = $(this).siblings('.pref_label').text()
-
-    if(state){
-      preferenceCount--
-
-      var index = preferences.indexOf(curPref)
-      preferences.splice(index,1)
-      $(this).attr('state', false)
-    }else{
-      preferenceCount++
-
-      if(preferenceCount === 4){
-        event.preventDefault()
-        preferenceCount = 3
-        return
-      }
-
-      preferences.push(curPref)
-      $(this).attr('state', true)
+  var key = localStorage.getItem('key')
+  
+  if(key !== null){  
+    console.log(key, typeof key)
+    function getUser(key){
+      return new Promise(function(resolve, reject) {
+        var ref = firebase.database().ref('users/' + key)
+        console.log(ref)
+        console.log('about to query')
+        ref.on('value', function(snapshot) {
+          console.log(snapshot.val())
+          resolve(true)  
+        })    
+      })
     }
-  })
+
+    getUser(key)
+      .then(function(valid) {
+        if (valid) {
+          console.log('resolved')
+        }
+      })
+  }else{
+
+  }
+
+  //Real time update of preferences array as the user clicks the checkboxes
+  // $(document.body).on('click', '.pref', function(){
+  //   var state = ($(this).attr('state') === 'true')
+  //   var curPref = $(this).siblings('.pref_label').text()
+
+  //   if(state){
+  //     preferenceCount--
+
+  //     var index = preferences.indexOf(curPref)
+  //     preferences.splice(index,1)
+  //     $(this).attr('state', false)
+  //   }else{
+  //     preferenceCount++
+
+  //     if(preferenceCount === 4){
+  //       event.preventDefault()
+  //       preferenceCount = 3
+  //       return
+  //     }
+
+  //     preferences.push(curPref)
+  //     $(this).attr('state', true)
+  //   }
+  // })
 
   //Event handler for new user submition
-  $(document.body).on('click','#submit', function(event){
+  $(document.body).on('click','#account-btn-mod', function(event){
     event.preventDefault()
 
     //Grab new user input fields from form
-    var name = $('#name').val().trim()
+    var firstName = $('#first_name').val().trim()
+    var lastName = $('#last_name').val().trim()
     var email = $('#email').val().trim()
-    var city = $('#city').val().trim()
-    var state = $('#state').val().trim().toUpperCase()
+    var city = $('#city_name').val().trim()
+    var state = $('#state-picker').val().trim().toUpperCase()
 
+    var preferenceOne = $('#preference_one').val()
+    var preferenceTwo = $('#preference_two').val()
+    var preferenceThree = $('#preference_three').val()
+
+    preferences.push(preferenceOne)
+    preferences.push(preferenceTwo)
+    preferences.push(preferenceThree)
+
+    for(var i = 0; i< preferences.length; i++){
+      if(preferences[i] === 'IMAX'){
+        preferences[i] = 'imax'
+      }
+      if(preferences[i] === 'IMAX 3D'){
+        preferences[i] = 'imax3d' 
+      }
+      if(preferences[i] === 'REALD 3D'){
+        preferences[i] = 'reald3d'
+      }
+      if(preferences[i] === 'Reserved Seating'){
+        preferences[i] = 'reservedseating'
+      }
+      if(preferences[i] === 'Closed Caption'){
+        preferences[i] = 'closedcaption'
+      }
+      if(preferences[i] === 'Reclining Seats'){
+        preferences[i] = 'reclinerseating'
+      }
+      if(preferences[i] === 'Alcohol'){
+        preferences[i] = 'alcoholcardingpolicy'
+      }
+    }
     //Check all fields are populated, if not run exception functions, add to exception counter
-    if(name === ''){
+    if(first_name === ''){
+      nameEmptyException()
+      exceptionCount++
+    }
+    if(last_name === ''){
       nameEmptyException()
       exceptionCount++
     }
@@ -113,95 +179,112 @@ $(document).ready(function(){
     }
 
     // Promise
-    var queryAsk = new Promise(
-        function (resolve, reject) {
-            resolve (validateEmail(email))
-    })
-
-    var queryResponse = function () {
-      console.log('Promise runs')
-      queryAsk
-        .then(function (fulfilled) {
-            // if()
-            console.log(fulfilled)
-            exceptionCount++
-
-            if(exceptionCount > 0){
-              exceptionCount = 0
-              return
-            }
-
-            //Make newUser object from inputs
-            var newUser = new user(name, email, city, state, preferences)
-
-            //Clear out all fields
-            $('#name').val('')
-            $('#email').val('')
-            $('#city').val('')
-            $('#state').val('')
-
-            console.log('shouldnt have gotten here', exceptionCount)
-            //Push newUser object to firebase users node, make reference of it
-            var newUserRef = database.ref('/users/').push(newUser)
-
-            //Set local storage key, to the node key in the database, so we can access their preferences later
-            localStorage.key = newUserRef.key
-
-            // window.location = 'movies.html'
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
+    function checkEmail(email){
+      return new Promise(function(resolve, reject) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        
+        if(re.test(String(email).toLowerCase())){
+            var ref = firebase.database().ref('/users/');        
+            ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
+              const response = snapshot.numChildren()
+              console.log("This should be before promise",response)
+              if(response > 0){
+                resolve(true)
+              }
+              else {
+                resolve(false)
+              }
+              // return false  
+            })
+           
+          } 
+      })
     }
+
+    checkEmail(email)
+      .then(function(valid) {
+        console.log(valid)
+        if(valid){
+          exceptionCount++
+        }
+
+        if(exceptionCount > 0){
+          exceptionCount = 0
+          return
+        }
+
+        //Make newUser object from inputs
+        var newUser = new user(firstName, lastName, email, city, state, preferences)
+
+        //Clear out all fields
+        $('#first_name').val('')
+        $('#last_name').val('')
+        $('#email').val('')
+        $('#city_name').val('')
+        $('#state-picker').val('')
+
+        //Push newUser object to firebase users node, make reference of it
+        var newUserRef = database.ref('/users/').push(newUser)
+
+        //Set local storage key, to the node key in the database, so we can access their preferences later
+        localStorage.setItem('key', newUserRef.key)
+
+        // window.location = 'movies.html'
+      })
   })
 
-  function validateEmail(email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  // function validateEmail(email) {
+  //   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     
-    if(re.test(String(email).toLowerCase())){
-        var ref = firebase.database().ref('/users/');
-        ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
-          const response = snapshot.numChildren()
-          console.log("This should be before promise",response)
-          if(response > 0){
-            console.log('returning true')
-            return true
-          }
-          return false  
-        })
+  //   if(re.test(String(email).toLowerCase())){
+  //       var ref = firebase.database().ref('/users/');        
+  //       ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
+  //         const response = snapshot.numChildren()
+  //         console.log("This should be before promise",response)
+  //         if(response > 0){
+  //           console.log('returning false')
+  //           return true
+  //         }
+  //         console.log('returning true')
+  //         return false  
+  //       })
        
-      } 
-    }
+  //     } 
+  // }
 
-  function populatePreferenceButtons(array){
+  function populateOptions(array){
     var count = array.length
 
     for (var i = 0; i < count; i++) {
-      var label = $('<label>')
-      var checkbox = $('<input type="checkbox" class="filled-in preference" state="false" id="preference-' + i +'">')
-      var span = $('<span class="pref_label">')
+      // console.log('making options')
+      var label = $('<option>').val(array[i])
+      label.addClass('pref_label')
+      label.text(array[i])
 
-      span.text(array[i])
-      label.append(checkbox).append(span)
+      $('#preference_one').append(label)
 
-      $('#theatre-preferences').append(label)
     }
+    $('#preference_one').children('.pref_label').clone().appendTo('#preference_two')
+    $('#preference_one').children('.pref_label').clone().appendTo('#preference_three')
   }
 
-  function populatePersonalPreferenceButtons(array){
-    var count = array.length
+  // function populatePersonalPreferenceButtons(array){
+  //   var count = array.length
 
-    for (var i = 0; i < count; i++) {
-      var label = $('<label>')
-      var checkbox = $('<input type="checkbox" class="filled-in preference" state="false" id="preference-' + i +'">')
-      var span = $('<span class="pref_label">')
+  //   for (var i = 0; i < count; i++) {
+  //     var label = $('<label>')
+  //     var checkbox = $('<input type="checkbox" class="filled-in preference" state="false" id="preference-' + i +'">')
+  //     var span = $('<span class="pref_label">')
 
-      span.text(array[i])
-      label.append(checkbox).append(span)
+  //     span.text(array[i])
+  //     label.append(checkbox).append(span)
 
-      $('#movie-preferences').append(label)
-    }
-  }
+  //     $('#preference_one').append(label)
+  //     $('#preference_two').append(label)
+  //     $('#preference_three').append(label)
+
+  //   }
+  // }
 
   function emailExistsException(){
     var email = $('#email')
@@ -265,28 +348,4 @@ $(document).ready(function(){
     city.css('color', '#00c853')
   }
 
-  // function setCookie(key, exdays) {
-  //   console.log('here')
-  //   var d = new Date();
-  //   d.setTime(d.getTime() + (exdays*24*60*60*1000));
-  //   var expires = "expires="+ d.toUTCString();
-  //   document.cookie = "name=" + key
-  // }
-
-  // function getCookie(name) {
-  //   var foo = name + "=";
-  //   var decodedCookie = decodeURIComponent(document.cookie);
-  //   console.log(decodedCookie)
-  //   var ca = decodedCookie.split(';');
-  //   for(var i = 0; i <ca.length; i++) {
-  //       var c = ca[i];
-  //       while (c.charAt(0) == ' ') {
-  //           c = c.substring(1);
-  //       }
-  //       if (c.indexOf(foo) == 0) {
-  //           return c.substring(foo.length, c.length);
-  //       }
-  //   }
-  //   return "";
-  // }
 })

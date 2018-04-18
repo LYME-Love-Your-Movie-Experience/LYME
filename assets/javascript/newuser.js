@@ -34,6 +34,12 @@ $(document).ready(function(){
     "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC",  
     "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"]
 
+  for (var i = 0; i < stateArr.length; i++) {
+    var stateOption = $('<option>').val(stateArr[i])
+    stateOption.text(stateArr[i])
+    $(".state-picker").append(stateOption)
+  }
+
   //Customer preference options
   theatrePreferenceArr = ['IMAX', 'Recliner Seating', 'Love Seats', 'Reserved Seating','Alchohol for Sale','Concession Delivery','3D','Loyalty Cards']
   moviePreferenceArr = ['Action','Adventure','Animation','Comedy','Documentary','Drama','Fantasy',

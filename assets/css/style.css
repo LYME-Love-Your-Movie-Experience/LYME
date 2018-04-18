@@ -1,9 +1,17 @@
+.container {
+	color: whitesmoke;
+}
+
 .nav-wrapper {
 	position: relative;
 }
 
 .container {
 	position: relative;
+}
+
+.movie-container {
+	color: whitesmoke;
 }
 
 .lime-nav {
@@ -24,10 +32,6 @@
 	padding: 20px;
 }
 
-/*.dropdown-content li > a, .dropdown-content li > span {
-    color: #01bf05 !important;
-}*/
-
 ul.dropdown-content.select-dropdown li span {
     color: #01bf05;
 }
@@ -35,3 +39,64 @@ ul.dropdown-content.select-dropdown li span {
 .validate{
 	color:white;
 }
+
+.theater-pref-div {
+	position: relative;
+	height: 300px;
+	margin-right: 5px;
+}
+
+.purchase-btn {
+	position: absolute;
+	bottom: 10px;
+	left: 60px;
+}
+
+.kick-right {
+	padding-left: 15px;
+}
+
+.reviews-div {
+	font-size: 12px;
+	height: 60px;
+	margin-right: 5px;
+}
+
+.movie-page-hr-break {
+	width: 80%;
+	opacity: .25;
+}
+
+.bumper {
+	height: 50px;
+}
+
+/* label color */
+ .input-field label {
+   color: whitesmoke;
+ }
+
+ /* label focus color */
+ .input-field input[type=text]:focus + label {
+   color: whitesmoke;
+ }
+
+ /* label underline focus color */
+ .input-field input[type=text]:focus {
+   border-bottom: 1px solid #000;
+   box-shadow: 0 1px 0 0 #000;
+ 	color: whitesmoke;
+ }
+ 
+ /* valid color */
+ .input-field input[type=text].valid {
+   border-bottom: 1px solid #000;
+   box-shadow: 0 1px 0 0 #000;
+ 	color: whitesmoke
+ }
+
+ #account-btn-mod {
+ 	float: right;
+ 	margin-left: 5px;
+ }
+

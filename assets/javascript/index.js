@@ -10,6 +10,10 @@ var config = {
 
 firebase.initializeApp(config);
 
+var database =  firebase.database()
+
+database.ref('/movies/').remove()
+
 $.ajax({
          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/movies/views/now-playing",
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
@@ -18,7 +22,6 @@ $.ajax({
             console.log(response);
             console.log(response.Runtime);
             $.each(response._embedded.movies,function(index,item){
-							var database =  firebase.database()
 							var movieID = item.id
 							var movieName = item.name
 

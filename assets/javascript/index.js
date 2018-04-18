@@ -12,8 +12,10 @@ firebase.initializeApp(config);
 
 var database =  firebase.database()
 
+//Delete all current movies in the /movies/ DB
 database.ref('/movies/').remove()
 
+//API call to AMC to pull all currently playing movies and push them to the DB
 $.ajax({
          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/movies/views/now-playing",
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},

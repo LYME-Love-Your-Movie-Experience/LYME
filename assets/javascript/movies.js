@@ -14,10 +14,9 @@ var config = {
 
 firebase.initializeApp(config);
 
-//https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/4-18-2018/amc-metreon-16/all
-// var movieId = ""
-// var movieTitle = ""
-// var theatreLongName = ""
+//Purchase Tickets URL generated to enable customer to buy tickets:
+//example URL: https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/4-18-2018/amc-metreon-16/all
+
 var todaysDate = moment().format('MM-DD-YY')
 var href = ""
 
@@ -39,8 +38,7 @@ function generatePurchaseLink(movieTitle, movieId, theatreLongName){
   return `window.location.href='${href}'`;
 }
 
-//Generate Link to purchase tickets at website
-// TODO: Add in the user's theaters from their DB, put them in this call
+// Call to users local theaters to check for matching "preferences" (attribute.codes)
 $.ajax({
          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/4145/showtimes/" + todaysDate,
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
@@ -58,7 +56,7 @@ $.ajax({
       });
 
 
-//Set Ajax to GET movie data
+//Set Ajax to GET movie data including Film Title, Film ID, Film Poster and Film MMPA Rating
 
 $.ajax({
          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/movies/views/now-playing",
@@ -128,30 +126,28 @@ $.ajax({
          }
       });
 
-//Set Ajax to GET movie and theater data
+//Set Ajax to GET movie and theater data (deprecated)
 
-$.ajax({
-         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/2325/movies/48972/earliest-showtime",
-         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-         type: "GET",
-         success: function(response) { 
-            console.log(response);
-            console.log(response.purchaseUrl)
-            console.log(response.Runtime);
-            $.each(response.attributes,function(index,item){
-              console.log(item.code);
+// $.ajax({
+//          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/2325/movies/48972/earliest-showtime",
+//          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+//          type: "GET",
+//          success: function(response) { 
+//             console.log(response);
+//             console.log(response.purchaseUrl)
+//             console.log(response.Runtime);
+//             $.each(response.attributes,function(index,item){
+//               console.log(item.code);
 
-            });
-            console.log(response.purchaseUrl) 
-         }
-      });
+//             });
+//             console.log(response.purchaseUrl) 
+//          }
+//       });
 
-//Original Code
+//API call to metacritic API to pull critic and user reviews
 
 var metaCriticQueryURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/search/";
 var metaCriticMovieURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/movie";
-
-// var filmName = "Ready Player One"
 
 function attachScore(criticScore, userScore, filmName){
   console.log(userScore);

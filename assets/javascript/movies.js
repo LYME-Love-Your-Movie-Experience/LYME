@@ -14,6 +14,46 @@ var config = {
 
 firebase.initializeApp(config);
 
+//https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/4-18-2018/amc-metreon-16/all
+// var movieId = ""
+// var movieTitle = ""
+// var theatreLongName = ""
+var todaysDate = moment().format('MM-DD-YY')
+var href = ""
+
+href = "http://www.amctheaters.com/movies/" + "movieTitle" + "-" + "movieId" + "/showtimes" +
+       "movieTitle" + "-" + "movieId" + "todaysDate" + "theatreLongName" + "/all"
+
+function generatePurchaseLink(movieTitle, movieId, theatreLongName){
+  var queryFilmName = movieTitle.toLowerCase();
+  // Also sanitize by replacing spaces with -
+  queryFilmName = queryFilmName.replace(/ /g , "-")
+  var movieTitleAndID = queryFilmName + "-" + movieId;
+  var href = "http://www.amctheaters.com/movies/";
+  href += movieTitleAndID + "/showtimes/" + movieTitleAndID;
+  href += "/" + todaysDate + "/" + theatreLongName + "/all";
+  console.log(href);
+  // "window.location.href='http://www.hyperlinkcode.com/button-links.php'"
+  return `window.location.href='${href}'`;
+}
+
+//Generate Link to purchase tickets at website
+// TODO: Add in the user's theaters from their DB, put them in this call
+$.ajax({
+         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/4145/showtimes/" + todaysDate,
+         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+         type: "GET",
+         success: function(response) { 
+            console.log(response);
+            console.log(response.Runtime);
+            $.each(response._embedded.showtimes,function(index,item){
+              console.log("Begin purchasing section here")
+              console.log(item.movieId)
+              console.log(item.movieName)
+              console.log(item.attributes.code);
+            });
+         }
+      });
 
 
 //Set Ajax to GET movie data
@@ -62,6 +102,7 @@ $.ajax({
               for (var i = 1; i < 4; i++) {
                 var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
                 var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
+                purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
                 theaterPreferencesBucket.text("Preferences Listing " + i)
                 theaterPreferencesBucket.append(purchaseButton)
                 theaterPreferencesContainer.append(theaterPreferencesBucket)
@@ -102,35 +143,6 @@ $.ajax({
             console.log(response.purchaseUrl) 
          }
       });
-
-//Generate Link to purchase tickets at website
-
-$.ajax({
-         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/4145/showtimes/4-18-18",
-         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-         type: "GET",
-         success: function(response) { 
-            console.log(response);
-            console.log(response.Runtime);
-            $.each(response._embedded.showtimes,function(index,item){
-              console.log("Begin purchasing section here")
-              console.log(item.movieId)
-              console.log(item.movieName)
-              console.log(item.attributes.code);
-            });
-         }
-      });
-
-//https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/2018-04-14/amc-metreon-16/all
-var movieId
-var movieTitle
-var todaysDate
-var theatreLongName
-var href
-
-
-href = "http://www.amctheaters.com/movies/" + "movieTitle" + "-" + "movieId" + "/showtimes" +
-       "movieTitle" + "-" + "movieId" + "todaysDate" + "theatreLongName" + "/all"
 
 //Original Code
 

@@ -28,6 +28,8 @@ function generatePurchaseLink(movieTitle, movieId, theatreLongName){
   var queryFilmName = movieTitle.toLowerCase();
   // Also sanitize by replacing spaces with -
   queryFilmName = queryFilmName.replace(/ /g , "-")
+  // Replace apostrophes with dashes as well, for AMC API only!
+  queryFilmName = queryFilmName.replace(/'/g,"-")
   var movieTitleAndID = queryFilmName + "-" + movieId;
   var href = "http://www.amctheaters.com/movies/";
   href += movieTitleAndID + "/showtimes/" + movieTitleAndID;

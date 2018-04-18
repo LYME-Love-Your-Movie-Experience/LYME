@@ -47,9 +47,12 @@ ul.dropdown-content.select-dropdown li span {
 }
 
 .purchase-btn {
-	position: absolute;
-	bottom: 10px;
-	left: 60px;
+ 	position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 99px
 }
 
 .kick-right {

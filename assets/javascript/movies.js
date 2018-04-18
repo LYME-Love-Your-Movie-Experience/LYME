@@ -14,9 +14,87 @@ var config = {
 
 firebase.initializeApp(config);
 
-//Purchase Tickets URL generated to enable customer to buy tickets:
-//example URL: https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/4-18-2018/amc-metreon-16/all
+var database =  firebase.database();
+var ref = firebase.database().ref('/movies/');
+ref.orderByKey().on("child_added", function(snapshot) {
+  console.log(snapshot.key);
+  console.log(snapshot.val())
+  console.log(snapshot.title);
 
+  var item ={
+    name: snapshot.val().name,
+    id: snapshot.val().id,
+    mpaaRating: snapshot.val().rating,
+    poster : snapshot.val().poster
+  }
+
+  var newRow = $('<div>').addClass("row")
+  var emptyCol = $('<div>').addClass("col s1")
+  var emptyRow = $('<div>').addClass("row")
+  var imgContainer = $('<div>').addClass("col s3");
+  var textContainer = $('<div>').addClass("col s8");
+  var mpaaRating = $('<div>').addClass("row kick-right").append('Rating:' + item.mpaaRating)
+  
+  var theaterListing = $('<div>').addClass("row")
+  var theaterPreferencesContainer = $('<div>').addClass("row")
+  
+  var reviewHeader = $('<div>').addClass("row kick-right")
+  var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
+  var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
+  var image = $('<img>')
+  image.height(300).width(200)
+  image.attr('src', item.poster)
+  imgContainer.append('<h5>' + item.name + '</h5>')
+  imgContainer.append(image)
+  imgContainer.append(mpaaRating)
+ 
+  criticReview.html("Critic Review").addClass("center-align")
+  userReview.html("User Review").addClass("center-align")
+  attachScore(criticReview, userReview, item.name)
+  reviewHeader.append(criticReview)
+  reviewHeader.append(userReview)
+  imgContainer.append(reviewHeader)
+
+  for (var i = 1; i < 4; i++) {
+    var individualTheater = $('<div>').addClass("col s3")
+    individualTheater.html("<h5>Theater " + i + "</h5>")
+    theaterListing.append(individualTheater)
+  } 
+  
+  for (var i = 1; i < 4; i++) {
+    var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
+    var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
+    purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
+    theaterPreferencesBucket.text("Preferences Listing " + i)
+    theaterPreferencesBucket.append(purchaseButton)
+    theaterPreferencesContainer.append(theaterPreferencesBucket)
+  } 
+
+  textContainer.append(emptyRow)
+  textContainer.append(theaterListing).addClass("center-align")
+  textContainer.append(theaterPreferencesContainer).addClass("center-align")
+
+  newRow.append(emptyCol)
+  newRow.append(imgContainer)
+  newRow.append(textContainer)
+  newRow.append('<hr class="movie-page-hr-break">')
+
+  console.log(item.id);
+  console.log(item.name);
+  console.log(item.posterDynamic);
+  $('.movie-container').append(newRow)
+});
+
+// scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
+//   snapshot.forEach(function(data) {
+//     console.log("The " + data.key + " score is " + data.val());
+//   });
+// });
+
+//https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/4-18-2018/amc-metreon-16/all
+// var movieId = ""
+// var movieTitle = ""
+// var theatreLongName = ""
 var todaysDate = moment().format('MM-DD-YY')
 var href = ""
 
@@ -33,7 +111,7 @@ function generatePurchaseLink(movieTitle, movieId, theatreLongName){
   var href = "http://www.amctheaters.com/movies/";
   href += movieTitleAndID + "/showtimes/" + movieTitleAndID;
   href += "/" + todaysDate + "/" + theatreLongName + "/all";
-  console.log(href);
+  // console.log(href);
   // "window.location.href='http://www.hyperlinkcode.com/button-links.php'"
   return `window.location.href='${href}'`;
 }
@@ -44,13 +122,13 @@ $.ajax({
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
          type: "GET",
          success: function(response) { 
-            console.log(response);
-            console.log(response.Runtime);
+            // console.log(response);
+            // console.log(response.Runtime);
             $.each(response._embedded.showtimes,function(index,item){
-              console.log("Begin purchasing section here")
-              console.log(item.movieId)
-              console.log(item.movieName)
-              console.log(item.attributes.code);
+              // console.log("Begin purchasing section here")
+              // console.log(item.movieId)
+              // console.log(item.movieName)
+              // console.log(item.attributes.code);
             });
          }
       });
@@ -58,73 +136,73 @@ $.ajax({
 
 //Set Ajax to GET movie data including Film Title, Film ID, Film Poster and Film MMPA Rating
 
-$.ajax({
-         url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/movies/views/now-playing",
-         headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-         type: "GET",
-         success: function(response) { 
-            console.log(response);
-            console.log(response.Runtime);
-            $.each(response._embedded.movies,function(index,item){
-              var newRow = $('<div>').addClass("row")
-              var emptyCol = $('<div>').addClass("col s1")
-              var emptyRow = $('<div>').addClass("row")
-              var imgContainer = $('<div>').addClass("col s3");
-              var textContainer = $('<div>').addClass("col s8");
-              var mpaaRating = $('<div>').addClass("row kick-right").append('Rating:' + item.mpaaRating)
+// $.ajax({
+//          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/movies/views/now-playing",
+//          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+//          type: "GET",
+//          success: function(response) { 
+//             console.log(response);
+//             console.log(response.Runtime);
+//             $.each(response._embedded.movies,function(index,item){
+//               var newRow = $('<div>').addClass("row")
+//               var emptyCol = $('<div>').addClass("col s1")
+//               var emptyRow = $('<div>').addClass("row")
+//               var imgContainer = $('<div>').addClass("col s3");
+//               var textContainer = $('<div>').addClass("col s8");
+//               var mpaaRating = $('<div>').addClass("row kick-right").append('Rating:' + item.mpaaRating)
               
-              var theaterListing = $('<div>').addClass("row")
-              var theaterPreferencesContainer = $('<div>').addClass("row")
+//               var theaterListing = $('<div>').addClass("row")
+//               var theaterPreferencesContainer = $('<div>').addClass("row")
               
-              var reviewHeader = $('<div>').addClass("row kick-right")
-              var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
-              var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
-              var image = $('<img>')
-              image.height(300).width(200)
-              image.attr('src', item.media.posterDynamic)
-              imgContainer.append('<h5>' + item.name + '</h5>')
-              imgContainer.append(image)
-              imgContainer.append(mpaaRating)
+//               var reviewHeader = $('<div>').addClass("row kick-right")
+//               var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
+//               var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
+//               var image = $('<img>')
+//               image.height(300).width(200)
+//               image.attr('src', item.media.posterDynamic)
+//               imgContainer.append('<h5>' + item.name + '</h5>')
+//               imgContainer.append(image)
+//               imgContainer.append(mpaaRating)
              
-              criticReview.html("Critic Review").addClass("center-align")
-              userReview.html("User Review").addClass("center-align")
-              attachScore(criticReview, userReview, item.name)
-              reviewHeader.append(criticReview)
-              reviewHeader.append(userReview)
-              imgContainer.append(reviewHeader)
+//               criticReview.html("Critic Review").addClass("center-align")
+//               userReview.html("User Review").addClass("center-align")
+//               attachScore(criticReview, userReview, item.name)
+//               reviewHeader.append(criticReview)
+//               reviewHeader.append(userReview)
+//               imgContainer.append(reviewHeader)
 
-              for (var i = 1; i < 4; i++) {
-                var individualTheater = $('<div>').addClass("col s3")
-                individualTheater.html("<h5>Theater " + i + "</h5>")
-                theaterListing.append(individualTheater)
-              } 
+//               for (var i = 1; i < 4; i++) {
+//                 var individualTheater = $('<div>').addClass("col s3")
+//                 individualTheater.html("<h5>Theater " + i + "</h5>")
+//                 theaterListing.append(individualTheater)
+//               } 
               
-              for (var i = 1; i < 4; i++) {
-                var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
-                var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
-                purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
-                theaterPreferencesBucket.text("Preferences Listing " + i)
-                theaterPreferencesBucket.append(purchaseButton)
-                theaterPreferencesContainer.append(theaterPreferencesBucket)
-              } 
+//               for (var i = 1; i < 4; i++) {
+//                 var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
+//                 var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
+//                 purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
+//                 theaterPreferencesBucket.text("Preferences Listing " + i)
+//                 theaterPreferencesBucket.append(purchaseButton)
+//                 theaterPreferencesContainer.append(theaterPreferencesBucket)
+//               } 
 
-              textContainer.append(emptyRow)
-              textContainer.append(theaterListing).addClass("center-align")
-              textContainer.append(theaterPreferencesContainer).addClass("center-align")
+//               textContainer.append(emptyRow)
+//               textContainer.append(theaterListing).addClass("center-align")
+//               textContainer.append(theaterPreferencesContainer).addClass("center-align")
 
-              newRow.append(emptyCol)
-              newRow.append(imgContainer)
-              newRow.append(textContainer)
-              newRow.append('<hr class="movie-page-hr-break">')
+//               newRow.append(emptyCol)
+//               newRow.append(imgContainer)
+//               newRow.append(textContainer)
+//               newRow.append('<hr class="movie-page-hr-break">')
 
-              console.log(item.id);
-              console.log(item.name);
-              console.log(item.media.posterDynamic);
-              $('.movie-container').append(newRow)
+//               console.log(item.id);
+//               console.log(item.name);
+//               console.log(item.media.posterDynamic);
+//               $('.movie-container').append(newRow)
 
-            });
-         }
-      });
+//             });
+//          }
+//       });
 
 //Set Ajax to GET movie and theater data (deprecated)
 
@@ -150,7 +228,6 @@ var metaCriticQueryURL = "https://cors-anywhere.herokuapp.com/https://api-marcal
 var metaCriticMovieURL = "https://cors-anywhere.herokuapp.com/https://api-marcalencc-metacritic-v1.p.mashape.com/movie";
 
 function attachScore(criticScore, userScore, filmName){
-  console.log(userScore);
   criticScore.attr('id',"metacritic-score");
   // Need to sanitize the input, make it all lowercase
   var queryFilmName = filmName.toLowerCase();
@@ -170,8 +247,8 @@ function attachScore(criticScore, userScore, filmName){
     type: "GET",
     success: function(response) { 
       // getthatresponse = response;
-      console.log("MetaCritic " + queryFilmName);
-      console.log(response[0].Rating);
+      // console.log("MetaCritic " + queryFilmName);
+      // console.log(response[0].Rating);
       // filmScoreNum = response[0].SearchItems[0].Rating.CriticRating;
       filmScoreNum = response[0].Rating.CriticRating;
       userScoreNum = response[0].Rating.UserRating;

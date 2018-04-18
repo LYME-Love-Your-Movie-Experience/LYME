@@ -12,20 +12,27 @@ firebase.initializeApp(config);
 var database = firebase.database()
 
 class user{
-  constructor(first_name, last_name, email, city, state, user_preferences){
+  constructor(first_name, last_name, email, city, state, user_preferences, user_theatres){
     this.firstName = first_name;
     this.lastName = last_name;
     this.email = email;
     this.city = city;
     this.state = state;
     this.user_preferences = user_preferences
+    this.user_theatres = user_theatres
   }
 }
+// Build this URL with the user's data
+var userURL = ""
 
+// Create AMC API call to get list of AMC theaters
+// Example of a theater query "theatres?state=california&city=san-francisco"
+var queryURL = "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/";
 
 $(document).ready(function(){
   // console.log(localStorage.getItem('key'))
-
+  const TO_NAME = 1;
+  const TO_ABBREVIATED = 2;
   var preferences = []
   var preferenceCount = 0
   var exceptionCount = 0
@@ -178,60 +185,93 @@ $(document).ready(function(){
       exceptionCount++
     }
 
-    // Promise
-    function checkEmail(email){
-      return new Promise(function(resolve, reject) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        
-        if(re.test(String(email).toLowerCase())){
-            var ref = firebase.database().ref('/users/');        
-            ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
-              const response = snapshot.numChildren()
-              console.log("This should be before promise",response)
-              if(response > 0){
-                resolve(true)
-              }
-              else {
-                resolve(false)
-              }
-              // return false  
+    userURL = buildAMCMovieQuery(city,state)
+    var user_theatres = []
+
+    function getTheatres(city, state){
+      return new Promise(function(resolve, reject){
+        $.ajax({
+          url: queryURL + userURL,
+          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+          type: "GET",
+          success: function(response) { 
+            $.each(response._embedded.theatres,function(index,item){
+              var newTheatre = {id: item.id, name: item.longName}
+              user_theatres.push(newTheatre)
             })
-           
-          } 
+            if(user_theatres.length > 0){
+              resolve(true)
+            }else{
+              resolve(false)
+            }
+          }
+        })
       })
     }
 
-    checkEmail(email)
-      .then(function(valid) {
-        console.log(valid)
-        if(valid){
-          exceptionCount++
+    getTheatres(city, state)
+      .then(function(valid){
+        console.log(valid, 'doing this before checkEmail')
+
+        function checkEmail(email){
+          return new Promise(function(resolve, reject) {
+            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            
+            if(re.test(String(email).toLowerCase())){
+                var ref = firebase.database().ref('/users/');        
+                ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
+                  const response = snapshot.numChildren()
+                  console.log("This should be before promise",response)
+                  if(response > 0){
+                    resolve(true)
+                  }
+                  else {
+                    resolve(false)
+                  }
+                  // return false  
+                })
+               
+              } 
+          })
         }
 
-        if(exceptionCount > 0){
-          exceptionCount = 0
-          return
-        }
+        checkEmail(email)
+          .then(function(valid) {
+            console.log(valid)
+            if(valid){
+              exceptionCount++
+            }
 
-        //Make newUser object from inputs
-        var newUser = new user(firstName, lastName, email, city, state, preferences)
+            if(exceptionCount > 0){
+              exceptionCount = 0
+              return
+            }
 
-        //Clear out all fields
-        $('#first_name').val('')
-        $('#last_name').val('')
-        $('#email').val('')
-        $('#city_name').val('')
-        $('#state-picker').val('')
+            //Make newUser object from inputs
+            var newUser = new user(firstName, lastName, email, city, state, preferences, user_theatres)
 
-        //Push newUser object to firebase users node, make reference of it
-        var newUserRef = database.ref('/users/').push(newUser)
+            //Clear out all fields
+            $('#first_name').val('')
+            $('#last_name').val('')
+            $('#email').val('')
+            $('#city_name').val('')
+            $('#state-picker').val('')
 
-        //Set local storage key, to the node key in the database, so we can access their preferences later
-        localStorage.setItem('key', newUserRef.key)
+            //Push newUser object to firebase users node, make reference of it
+            var newUserRef = database.ref('/users/').push(newUser)
 
-        // window.location = 'movies.html'
-      })
+            //Set local storage key, to the node key in the database, so we can access their preferences later
+            localStorage.setItem('key', newUserRef.key)
+
+            window.location = 'movies.html'
+          })
+    })
   })
+
+
+
+
+    
 
   // function validateEmail(email) {
   //   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -267,24 +307,6 @@ $(document).ready(function(){
     $('#preference_one').children('.pref_label').clone().appendTo('#preference_two')
     $('#preference_one').children('.pref_label').clone().appendTo('#preference_three')
   }
-
-  // function populatePersonalPreferenceButtons(array){
-  //   var count = array.length
-
-  //   for (var i = 0; i < count; i++) {
-  //     var label = $('<label>')
-  //     var checkbox = $('<input type="checkbox" class="filled-in preference" state="false" id="preference-' + i +'">')
-  //     var span = $('<span class="pref_label">')
-
-  //     span.text(array[i])
-  //     label.append(checkbox).append(span)
-
-  //     $('#preference_one').append(label)
-  //     $('#preference_two').append(label)
-  //     $('#preference_three').append(label)
-
-  //   }
-  // }
 
   function emailExistsException(){
     var email = $('#email')
@@ -348,4 +370,121 @@ $(document).ready(function(){
     city.css('color', '#00c853')
   }
 
+
+  function convertRegion(input, to) {
+    var states = [
+        ['Alabama', 'AL'],
+        ['Alaska', 'AK'],
+        ['American Samoa', 'AS'],
+        ['Arizona', 'AZ'],
+        ['Arkansas', 'AR'],
+        ['Armed Forces Americas', 'AA'],
+        ['Armed Forces Europe', 'AE'],
+        ['Armed Forces Pacific', 'AP'],
+        ['California', 'CA'],
+        ['Colorado', 'CO'],
+        ['Connecticut', 'CT'],
+        ['Delaware', 'DE'],
+        ['District Of Columbia', 'DC'],
+        ['Florida', 'FL'],
+        ['Georgia', 'GA'],
+        ['Guam', 'GU'],
+        ['Hawaii', 'HI'],
+        ['Idaho', 'ID'],
+        ['Illinois', 'IL'],
+        ['Indiana', 'IN'],
+        ['Iowa', 'IA'],
+        ['Kansas', 'KS'],
+        ['Kentucky', 'KY'],
+        ['Louisiana', 'LA'],
+        ['Maine', 'ME'],
+        ['Marshall Islands', 'MH'],
+        ['Maryland', 'MD'],
+        ['Massachusetts', 'MA'],
+        ['Michigan', 'MI'],
+        ['Minnesota', 'MN'],
+        ['Mississippi', 'MS'],
+        ['Missouri', 'MO'],
+        ['Montana', 'MT'],
+        ['Nebraska', 'NE'],
+        ['Nevada', 'NV'],
+        ['New Hampshire', 'NH'],
+        ['New Jersey', 'NJ'],
+        ['New Mexico', 'NM'],
+        ['New York', 'NY'],
+        ['North Carolina', 'NC'],
+        ['North Dakota', 'ND'],
+        ['Northern Mariana Islands', 'NP'],
+        ['Ohio', 'OH'],
+        ['Oklahoma', 'OK'],
+        ['Oregon', 'OR'],
+        ['Pennsylvania', 'PA'],
+        ['Puerto Rico', 'PR'],
+        ['Rhode Island', 'RI'],
+        ['South Carolina', 'SC'],
+        ['South Dakota', 'SD'],
+        ['Tennessee', 'TN'],
+        ['Texas', 'TX'],
+        ['US Virgin Islands', 'VI'],
+        ['Utah', 'UT'],
+        ['Vermont', 'VT'],
+        ['Virginia', 'VA'],
+        ['Washington', 'WA'],
+        ['West Virginia', 'WV'],
+        ['Wisconsin', 'WI'],
+        ['Wyoming', 'WY'],
+    ];
+
+    // So happy that Canada and the US have distinct abbreviations
+    var provinces = [
+        ['Alberta', 'AB'],
+        ['British Columbia', 'BC'],
+        ['Manitoba', 'MB'],
+        ['New Brunswick', 'NB'],
+        ['Newfoundland', 'NF'],
+        ['Northwest Territory', 'NT'],
+        ['Nova Scotia', 'NS'],
+        ['Nunavut', 'NU'],
+        ['Ontario', 'ON'],
+        ['Prince Edward Island', 'PE'],
+        ['Quebec', 'QC'],
+        ['Saskatchewan', 'SK'],
+        ['Yukon', 'YT'],
+    ];
+
+    var regions = states.concat(provinces);
+
+    var i; // Reusable loop variable
+    if (to == TO_ABBREVIATED) {
+        input = input.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+        for (i = 0; i < regions.length; i++) {
+            if (regions[i][0] == input) {
+                return (regions[i][1]);
+            }
+        }
+    } else if (to == TO_NAME) {
+        input = input.toUpperCase();
+        for (i = 0; i < regions.length; i++) {
+            if (regions[i][1] == input) {
+                return (regions[i][0]);
+            }
+        }
+    }
+  }
+
+  function buildAMCMovieQuery(city, state){
+    var theaterQuery = "theatres?"
+
+    var queryState = convertRegion(state, TO_NAME);
+    queryState = queryState.toLowerCase();
+    queryState = queryState.replace(/ /g , "-");
+
+    var userCity = city.toLowerCase();
+    userCity = userCity.replace(/ /g , "-");
+
+    theaterQuery += "state=" + queryState;
+    theaterQuery += "&city=" + userCity;
+
+    return theaterQuery;
+  }
 })

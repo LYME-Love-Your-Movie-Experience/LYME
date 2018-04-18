@@ -24,17 +24,18 @@ $.ajax({
             // console.log(response);
             // console.log(response.Runtime);
             $.each(response._embedded.movies,function(index,item){
-							var movieID = item.id
-							var movieName = item.name
+              var movieID = item.id
+              var movieName = item.name
+              var movieRating = item.mpaaRating
+              var moviePoster = item.media.posterDynamic
 
-								var newMovie = {name: movieName, id: movieID}
-								database.ref('/movies/').push(newMovie)
+                var newMovie = {name: movieName, id: movieID, rating: movieRating, poster: moviePoster}
+                database.ref('/movies/').push(newMovie)
 
-            	// console.log(item.id);
-             //  console.log(item.name);
-            })
-          }
-        })
+              // console.log(item.id);
+              // console.log(item.name);
+              // console.log(item.mpaaRating);
+              // console.log(item.media.posterDynamic)
 
 $(document).ready(function(){
       $('.modal').modal();

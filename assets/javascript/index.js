@@ -19,8 +19,8 @@ $.ajax({
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
          type: "GET",
          success: function(response) { 
-            console.log(response);
-            console.log(response.Runtime);
+            // console.log(response);
+            // console.log(response.Runtime);
             $.each(response._embedded.movies,function(index,item){
 							var movieID = item.id
 							var movieName = item.name
@@ -28,8 +28,40 @@ $.ajax({
 								var newMovie = {name: movieName, id: movieID}
 								database.ref('/movies/').push(newMovie)
 
-            	console.log(item.id);
-              console.log(item.name);
+            	// console.log(item.id);
+             //  console.log(item.name);
             })
           }
         })
+
+$(document).ready(function(){
+      $('.modal').modal();
+});
+
+$(document.body).on('click', '#submit_button', function(event){
+  event.preventDefault()
+
+  var email = $('#user_email').val()
+
+  console.log(email, typeof email)
+
+  function getUser(email){
+      return new Promise(function(resolve, reject) {
+        var ref = firebase.database().ref('users/')
+        ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
+          var sv = snapshot.val()
+          localStorage.setItem('key', Object.keys(sv)[0])
+          resolve(true)  
+        })    
+      })
+    }
+
+    getUser(email)
+      .then(function(valid) {
+        if (valid) {
+          window.location = 'account.html'
+          console.log('resolved')
+        }
+      })
+
+})

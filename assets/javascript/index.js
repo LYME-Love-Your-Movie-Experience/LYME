@@ -36,7 +36,9 @@ $.ajax({
               // console.log(item.name);
               // console.log(item.mpaaRating);
               // console.log(item.media.posterDynamic)
-
+            })
+          }
+        })
 $(document).ready(function(){
       $('.modal').modal();
 });

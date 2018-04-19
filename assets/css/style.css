@@ -97,3 +97,7 @@ ul.dropdown-content.select-dropdown li span {
  #account-btn-mod {
  	float: right;
  }
+
+#state-picker, .select-dropdown{
+	color: white !important;
+}

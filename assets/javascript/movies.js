@@ -22,62 +22,15 @@ var key = localStorage.getItem('key')
 var user_theaters
 var user_prefences
 
-if(key !== null){  
-    console.log(key, typeof key)
-    function getUser(key){
-      return new Promise(function(resolve, reject) {
-        var ref = firebase.database().ref('users/' + key)
-        // console.log(ref)
-        console.log('about to query')
-        ref.on('value', function(snapshot) {
-          sv = snapshot.val()
-          user_theaters = sv.user_theatres
-          user_preferences = sv.user_preferences
-          console.log(user_theaters[0].name)
-          $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
-          $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
-          $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
-
-          console.log(user_theaters, user_preferences)
-          resolve(true)  
-        })    
-      })
-    }
-
-    getUser(key)
-      .then(function(valid) {
-        if (valid) {
-          console.log('resolved')
-          for (var i = 0; i < )
-          // for (var i = 0; i < user_theaters.length; i++){
-          //   for (var j = 0; j < user_preferences.length; j++){
-
-          //   }
-          // }
-          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
-          $.ajax({
-             url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/user_theaterstheatres/2325/movies/48972/earliest-showtime",
-             headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-             type: "GET",
-             success: function(response) { 
-                // console.log(response);
-                // console.log(response.purchaseUrl)
-                // console.log(response.Runtime);
-                $.each(response.attributes,function(index,item){
-                  console.log(item.code);
-
-                });
-                      // console.log(response.purchaseUrl) 
-             }
-          });
-        }
-      })
-} else {
-  console.log("Null Key!  No user!")
-}
+// NOTE: This is getting hard coded for now, we may want to store 'page size' as an attribute of movies in the database
+var numMovies = 0;
+var moviesArr = [];
+var movieIDArr = [];
 
 //Event listener for movie nodes
 refMovies.orderByKey().on("child_added", function(snapshot) {
+
+  numMovies++;
 
   var item ={
     name: snapshot.val().name,
@@ -85,6 +38,9 @@ refMovies.orderByKey().on("child_added", function(snapshot) {
     mpaaRating: snapshot.val().rating,
     poster : snapshot.val().poster
   }
+
+  moviesArr.push(item.name);
+  movieIDArr.push(item.id);
 
   var newRow = $('<div>').addClass("row")
   newRow.attr('id', item.name)
@@ -150,6 +106,81 @@ refMovies.orderByKey().on("child_added", function(snapshot) {
   // console.log(item.posterDynamic);
   $('.movie-container').append(newRow)
 });
+
+
+if(key !== null){  
+    console.log(key, typeof key)
+    function getUser(key){
+      return new Promise(function(resolve, reject) {
+        var ref = firebase.database().ref('users/' + key)
+        // console.log(ref)
+        console.log('about to query')
+        ref.on('value', function(snapshot) {
+          sv = snapshot.val()
+          user_theaters = sv.user_theatres
+          user_preferences = sv.user_preferences
+          console.log(user_theaters[0].name)
+          $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
+          $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
+          $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
+
+          console.log(user_theaters, user_preferences)
+          resolve(true)  
+        })    
+      })
+    }
+
+    getUser(key)
+      .then(function(valid) {
+        if (valid) {
+          console.log('resolved')
+          //Iterate over all movies
+          for (var i = 0; i < numMovies; i++){
+            var niceMovieName = moviesArr[i].toLowerCase();
+            niceMovieName = niceMovieName.replace(/ /g , "-")
+            niceMovieName = niceMovieName.replace(/'/g,"-")
+            console.log(niceMovieName);
+            //Iterate over theaters
+            for (var wtf = 1; wtf <= user_theaters.length; wtf++){
+              console.log("wtf is " + wtf)
+              var req = $.ajax({
+                 url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/" +
+                 user_theaters[wtf-1].id + "/movies/" + movieIDArr[i] + "/earliest-showtime",
+                 headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+                 type: "GET",
+                 success: function(response) { 
+                    // console.log(response);
+                    // console.log(response.purchaseUrl)
+                    // console.log(response.Runtime);
+                    $.each(response.attributes,function(index,item){
+                      for (var k = 0; k < user_preferences.length; k++){
+                        // console.log("test " + user_preferences[k] + " against " + item.code)
+                        if (user_preferences[k] === item.code.toLowerCase()){
+                          console.log(item.code + ", match wtf is " + wtf);
+                          var buildID = niceMovieName + "_theater_";
+                          buildID += wtf;
+                          console.log(buildID);
+                          // $("#")
+                        }
+                      }
+                    });
+                          // console.log(response.purchaseUrl) 
+                 },
+                error : function(response){
+                  console.log("Need to put Unavailable")
+                }
+              });
+
+            }
+          }
+          //   for (var j = 0; j < user_preferences.length; j++){
+          // }
+          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
+        }
+      })
+} else {
+  console.log("Null Key!  No user!")
+}
 
 // scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
 //   snapshot.forEach(function(data) {

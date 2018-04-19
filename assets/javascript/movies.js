@@ -15,18 +15,36 @@ var config = {
 firebase.initializeApp(config);
 
 var database =  firebase.database();
-var ref = firebase.database().ref('/movies/');
+var refMovies = firebase.database().ref('/movies/');
 
 var key = localStorage.getItem('key')
+
+// var theaterRef = database.ref("/users/" + key);
+// theaterRef.orderByValue().on("value", function(snapshot) {
+//     console.log(snapshot.val().user_theatres[0].id);
+//   });
+
 var user_theaters
 var user_prefences
 
 
-//Event listener for movie nodes
-ref.orderByKey().on("child_added", function(snapshot) {
-  // console.log(snapshot.key);
-  // console.log(snapshot.val())
-  // console.log(snapshot.title);
+var numMovies = 0;
+var moviesArr = [];
+var movieIDArr = [];
+
+class showing{
+  constructor(movieName, theaterName, movieID, movieProperties){
+    this.movieName = movieName;
+    this.theaterName = theaterName;
+    this.movieID = movieID;
+    this.movieProperties = movieProperties;
+  }
+}
+
+var ArrayOfShowings = []
+
+refMovies.orderByKey().on("child_added", function(snapshot) {
+  numMovies++;
 
   var item ={
     name: snapshot.val().name,
@@ -35,7 +53,11 @@ ref.orderByKey().on("child_added", function(snapshot) {
     poster : snapshot.val().poster
   }
 
+  moviesArr.push(item.name);
+  movieIDArr.push(item.id);
+
   var newRow = $('<div>').addClass("row")
+  newRow.attr('id', item.name)
   var emptyCol = $('<div>').addClass("col s1")
   var emptyRow = $('<div>').addClass("row")
   var imgContainer = $('<div>').addClass("col s3");
@@ -64,13 +86,20 @@ ref.orderByKey().on("child_added", function(snapshot) {
 
   for (var i = 1; i < 4; i++) {
     var individualTheater = $('<div>').addClass("col s3")
+    individualTheater.attr('id', "_theater_" + i)
     individualTheater.addClass("theater" + i)
     individualTheater.html("<h5>Theater " + i + "</h5>")
+    // individualTheater.html("<h5>Theater " + user_theaters[i-1].name + "</h5>")
     theaterListing.append(individualTheater)
   } 
   
   for (var i = 1; i < 4; i++) {
+    var niceMovieName = item.name.toLowerCase();
+    niceMovieName = niceMovieName.replace(/ /g , "-")
+    niceMovieName = niceMovieName.replace(/'/g,"-")
     var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
+    theaterPreferencesBucket.attr('id', niceMovieName + "_theater_" + i)
+    theaterPreferencesBucket.addClass("theaterDiv" + i)
     var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
     purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
     theaterPreferencesBucket.text("Preferences Listing " + i)
@@ -91,7 +120,9 @@ ref.orderByKey().on("child_added", function(snapshot) {
   // console.log(item.name);
   // console.log(item.posterDynamic);
   $('.movie-container').append(newRow)
-});
+
+
+})
 
 if(key !== null){  
     console.log(key, typeof key)
@@ -99,7 +130,7 @@ if(key !== null){
       return new Promise(function(resolve, reject) {
         var ref = firebase.database().ref('users/' + key)
         // console.log(ref)
-        // console.log('about to query')
+        console.log('about to query')
         ref.on('value', function(snapshot) {
           sv = snapshot.val()
           user_theaters = sv.user_theatres
@@ -108,6 +139,10 @@ if(key !== null){
           $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
           $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
           $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
+
+          $(".theaterDiv1").addClass("_theater_" + user_theaters[0].id)
+          $(".theaterDiv2").addClass("theaterID" + user_theaters[1].id)
+          $(".theaterDiv3").addClass("theaterID" + user_theaters[2].id)
 
           console.log(user_theaters, user_preferences)
           resolve(true)  
@@ -119,12 +154,77 @@ if(key !== null){
       .then(function(valid) {
         if (valid) {
           console.log('resolved')
+          //Iterate over all movies
+          for (var i = 0; i < numMovies; i++){
+            
+            var niceMovieName = moviesArr[i].toLowerCase();
+            niceMovieName = niceMovieName.replace(/ /g , "-")
+            niceMovieName = niceMovieName.replace(/'/g,"-")
+            
+            console.log(niceMovieName);
+            //Iterate over theaters
+            for (var j = 1; j <= user_theaters.length; j++){
+              var theaterAndMovieProperties = [];
+              var requests = [];
+              var counter = j
+              var req = $.ajax({
+                 url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/" +
+                 user_theaters[j-1].id + "/movies/" + movieIDArr[i] + "/earliest-showtime",
+                 headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+                 type: "GET"
+              }).done(function (resp){
+                console.log(resp)
 
+                var workingMovieID = resp.theatreId
+                console.log(workingMovieID)
+                var workingMovieVar = resp.movieName.toLowerCase()
+                workingMovieVar = workingMovieVar.replace(/ /g, "-")
+                workingMovieVar = workingMovieVar.replace(/'/g, "-")
+              
+                $.each(resp.attributes,function(index,item){
+                  var prefChecker = item.code.toLowerCase()
+
+                  for (var k = 0; k < user_preferences.length; k++){
+                    if (user_preferences[k] === prefChecker) {
+                      $(".theaterID" + workingMovieID).append(user_preferences[k] + "<br>")
+                      var buildID = workingMovieVar + "_theater_" + workingMovieID
+                      console.log(user_preferences[k])
+                      console.log(buildID)
+                    }
+
+                    // for (var l = 0; l < theaterAndMovieProperties.length; l++){
+                    //   console.log("test " + user_preferences[k] + " against " + item.code)
+                    //   if (user_preferences[k] === theaterAndMovieProperties[l].toLowerCase()){
+                    //     console.log(item.code + ", match j is " + j);
+                    //     var buildID = niceMovieName + "_theater_";
+                    //     buildID += j;
+                    //     console.log(buildID);
+                    //     // $("#")
+                    //   }
+                    // }
+                  }
+                  // console.log(theaterAndMovieProperties[0])
+                })
+              }).fail(function(jqXHR, status){
+                console.log("Fail" + jqXHR);
+                return;
+              });
+              
+              // requests.push(req);
+
+              // $.when(req).done(function() {
+              //   console.log("lol" + theaterAndMovieProperties.length)
+              // })
+
+            }
+          }
+          //   for (var j = 0; j < user_preferences.length; j++){
+          // }
           //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
         }
       })
-}else{
-
+} else {
+  console.log("Null Key!  No user!")
 }
 // scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
 //   snapshot.forEach(function(data) {

@@ -21,7 +21,6 @@ $.ajax({
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
          type: "GET",
          success: function(response) { 
-            console.log(response);
             // console.log(response.Runtime);
             $.each(response._embedded.movies,function(index,item){
               var movieID = item.id
@@ -48,15 +47,17 @@ $(document.body).on('click', '#submit_button', function(event){
 
   var email = $('#user_email').val()
 
-  console.log(email, typeof email)
-
   function getUser(email){
       return new Promise(function(resolve, reject) {
         var ref = firebase.database().ref('users/')
         ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
           var sv = snapshot.val()
-          localStorage.setItem('key', Object.keys(sv)[0])
-          resolve(true)  
+          if(sv !== 'null'){
+            localStorage.setItem('key', Object.keys(sv)[0])
+            resolve(true)
+          }else{
+            resolve(false)
+          }  
         })    
       })
     }
@@ -65,9 +66,14 @@ $(document.body).on('click', '#submit_button', function(event){
       .then(function(valid) {
         if (valid) {
           window.location = 'movies.html'
-          console.log('resolved')
+        }else{
+          $('#user_email').val('Email not attached to an existing account')
         }
       })
+})
+
+$(document.body).on('click', '#user_email', function(event){
+  $('#user_email').val('')
 })
 
 $(document.body).on('click', '#account_creation_btn', function(event) {

@@ -32,7 +32,6 @@ var queryURL = "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/
 $(document).ready(function(){
   $('#success-modal').modal();
   $('#help-modal').modal();
-  $('#help-modal').modal('open');
 
   // console.log(localStorage.getItem('key'))
   const TO_NAME = 1;
@@ -52,7 +51,6 @@ $(document).ready(function(){
     var stateOption = $('<option>').val(stateArr[i])
     stateOption.text(stateArr[i])
     $(".state-picker").append(stateOption)
-    // console.log('state')
   }
 
   //Customer preference options
@@ -71,53 +69,35 @@ $(document).ready(function(){
   var key = localStorage.getItem('key')
   
   if(key !== null){  
-    console.log(key, typeof key)
     function getUser(key){
       return new Promise(function(resolve, reject) {
         var ref = firebase.database().ref('users/' + key)
-        console.log(ref)
-        console.log('about to query')
         ref.on('value', function(snapshot) {
-          console.log(snapshot.val())
+          var sv = snapshot.val()
+
+          $('#first_name').val(sv.firstName)
+          $('#first-name-label').addClass('active')
+          $('#last_name').val(sv.lastName)
+          $('#last-name-label').addClass('active')
+          $('#email').val(sv.email)
+          $('#email-label').addClass('active')          
+          $('#city_name').val(sv.city)
+          $('#city-label').addClass('active')          
+          $('#state-picker').val(sv.state)
           resolve(true)  
-        })    
+        })
       })
     }
 
     getUser(key)
       .then(function(valid) {
+        console.log(valid)
         if (valid) {
-          console.log('resolved')
         }
       })
   }else{
-
+    $('#help-modal').modal('open');
   }
-
-  //Real time update of preferences array as the user clicks the checkboxes
-  // $(document.body).on('click', '.pref', function(){
-  //   var state = ($(this).attr('state') === 'true')
-  //   var curPref = $(this).siblings('.pref_label').text()
-
-  //   if(state){
-  //     preferenceCount--
-
-  //     var index = preferences.indexOf(curPref)
-  //     preferences.splice(index,1)
-  //     $(this).attr('state', false)
-  //   }else{
-  //     preferenceCount++
-
-  //     if(preferenceCount === 4){
-  //       event.preventDefault()
-  //       preferenceCount = 3
-  //       return
-  //     }
-
-  //     preferences.push(curPref)
-  //     $(this).attr('state', true)
-  //   }
-  // })
 
   //Event handler for new user submition
   $(document.body).on('click','#account-btn-mod', function(event){
@@ -128,7 +108,7 @@ $(document).ready(function(){
     var lastName = $('#last_name').val().trim()
     var email = $('#email').val().trim()
     var city = $('#city_name').val().trim()
-    var state = $('#state-picker').val().trim().toUpperCase()
+    var state = $('#state-picker').val()
 
     var preferenceOne = $('#preference_one').val()
     var preferenceTwo = $('#preference_two').val()
@@ -162,12 +142,12 @@ $(document).ready(function(){
       }
     }
     //Check all fields are populated, if not run exception functions, add to exception counter
-    if(first_name === ''){
-      nameEmptyException()
+    if(firstName === ''){
+      firstNameEmptyException()
       exceptionCount++
     }
-    if(last_name === ''){
-      nameEmptyException()
+    if(lastName === ''){
+      lastNameEmptyException()
       exceptionCount++
     }
     if(email === ''){
@@ -178,7 +158,7 @@ $(document).ready(function(){
       cityEmptyException()
       exceptionCount++
     }
-    if(state === ''){
+    if(state === null){
       stateEmptyException()
       exceptionCount++
     }
@@ -188,8 +168,10 @@ $(document).ready(function(){
       stateCodeException()
       exceptionCount++
     }
+    if(state !== null){
+      userURL = buildAMCMovieQuery(city,state)
+    }
 
-    userURL = buildAMCMovieQuery(city,state)
     var user_theatres = []
 
     function getTheatres(city, state){
@@ -225,7 +207,6 @@ $(document).ready(function(){
                 var ref = firebase.database().ref('/users/');        
                 ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
                   const response = snapshot.numChildren()
-                  console.log("This should be before promise",response)
                   if(response > 0){
                     resolve(true)
                   }
@@ -241,9 +222,9 @@ $(document).ready(function(){
 
         checkEmail(email)
           .then(function(valid) {
-            console.log(valid)
             if(valid){
               exceptionCount++
+              console.log(exceptionCount)
             }
 
             if(exceptionCount > 0){
@@ -267,34 +248,10 @@ $(document).ready(function(){
             //Set local storage key, to the node key in the database, so we can access their preferences later
             localStorage.setItem('key', newUserRef.key)
 
-            window.location = 'movies.html'
+            $('success-modal').modal('open');
           })
     })
   })
-
-
-
-
-    
-
-  // function validateEmail(email) {
-  //   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    
-  //   if(re.test(String(email).toLowerCase())){
-  //       var ref = firebase.database().ref('/users/');        
-  //       ref.orderByChild('email').equalTo(email).once('value', function(snapshot) {
-  //         const response = snapshot.numChildren()
-  //         console.log("This should be before promise",response)
-  //         if(response > 0){
-  //           console.log('returning false')
-  //           return true
-  //         }
-  //         console.log('returning true')
-  //         return false  
-  //       })
-       
-  //     } 
-  // }
 
   function populateOptions(array){
     var count = array.length
@@ -321,9 +278,18 @@ $(document).ready(function(){
     email.val('That email address is already linked to another account') 
   }
 
-  function nameEmptyException(){
-    var name = $('#name')
-    var label = $('#name-label')
+  function firstNameEmptyException(){
+    var name = $('#first_name')
+    var label = $('#first-name-label')
+
+    label.addClass('active')
+    name.css('color', '#00c853')
+    name.val('Please input your name')
+  }
+
+  function lastNameEmptyException(){
+    var name = $('#last_name')
+    var label = $('#last-name-label')
 
     label.addClass('active')
     name.css('color', '#00c853')
@@ -340,7 +306,7 @@ $(document).ready(function(){
   }
 
   function cityEmptyException(){
-    var city = $('#city')
+    var city = $('#city_name')
     var label = $('#city-label')
 
     label.addClass('active')

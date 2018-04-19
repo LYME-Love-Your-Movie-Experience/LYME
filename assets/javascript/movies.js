@@ -281,15 +281,27 @@ function attachScore(criticScore, userScore, filmName){
     },
     type: "GET",
     success: function(response) { 
-      // getthatresponse = response;
-      // console.log("MetaCritic " + queryFilmName);
-      // console.log(response[0].Rating);
-      // filmScoreNum = response[0].SearchItems[0].Rating.CriticRating;
-      filmScoreNum = response[0].Rating.CriticRating;
-      userScoreNum = response[0].Rating.UserRating;
+      if (response[0].Rating == null){
+        criticScore.append("<br><h7> Score Unavailable </h7>")
+        userScore.append("<br><h7> Score Unavailable </h7>")
+        return;
+      }
+
+      if (response[0].Rating.CriticRating == null)
+      {
+        criticScore.append("<br><h7> Score Unavailable </h7>")
+      } else {
+        filmScoreNum = response[0].Rating.CriticRating;
+        criticScore.append("<br><h6>" + parseInt(filmScoreNum) + "/100 </h6>");
+      }
+
+      if (response[0].Rating.UserRating == null){
+        userScore.append("<br><h7> Score Unavailable </h7>")
+      } else {
+        userScoreNum = response[0].Rating.UserRating;
+        userScore.append("<br><h6>" + userScoreNum + "/10</h6>")
+      }
       // console.log("Score : " + filmScoreNum)
-      criticScore.append("<br><h6>" + parseInt(filmScoreNum) + "/100 </h6>");
-      userScore.append("<br><h6>" + userScoreNum + "/10</h6>")
       }
   });
 }

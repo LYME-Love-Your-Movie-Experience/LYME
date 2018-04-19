@@ -52,23 +52,23 @@
           <div class="row">
             <div class="input-field col s6">
               <input id="first_name" type="text" class="validate">
-              <label for="first_name">First Name</label>
+              <label id="first-name-label" for="first_name">First Name</label>
             </div>
             <div class="input-field col s6">
               <input id="last_name" type="text" class="validate">
-              <label for="last_name">Last Name</label>
+              <label id="last-name-label" for="last_name">Last Name</label>
             </div>
           </div>
           <div class="row">
             <div class="input-field col s12">
               <input id="email" type="email" class="validate">
-              <label for="email">Email</label>
+              <label id="email-label" for="email">Email</label>
             </div>
           </div>
             <div class="row">
             <div class="input-field col s6">
               <input id="city_name" type="text" class="validate">
-              <label for="city">City</label>
+              <label id="city-label" for="city">City</label>
             </div>
             <div class="input-field col s6">
               <select id="state-picker" class="state-picker">
@@ -102,7 +102,7 @@
       </div>
 
       <div class="row">
-        <button data-target="success-modal" id="account-btn-mod" class="btn modal-trigger waves-effect waves-light red lighten-1 btn save-option">Save Changes</button>
+        <button id="account-btn-mod" class="btn waves-effect waves-light red lighten-1 btn save-option">Save Changes</button>
       </div>
 
       <div id="success-modal" class="modal green accent-4">

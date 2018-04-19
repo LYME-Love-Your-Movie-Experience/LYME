@@ -16,10 +16,45 @@ firebase.initializeApp(config);
 
 var database =  firebase.database();
 var ref = firebase.database().ref('/movies/');
+
+var key = localStorage.getItem('key')
+var user_theaters
+var user_prefences
+
+if(key !== null){  
+    console.log(key, typeof key)
+    function getUser(key){
+      return new Promise(function(resolve, reject) {
+        var ref = firebase.database().ref('users/' + key)
+        // console.log(ref)
+        // console.log('about to query')
+        ref.on('value', function(snapshot) {
+          sv = snapshot.val()
+          user_theaters = sv.user_theatres
+          user_prefences = sv.user_preferences
+          console.log(user_theaters, user_prefences)
+          resolve(true)  
+        })    
+      })
+    }
+
+    getUser(key)
+      .then(function(valid) {
+        if (valid) {
+          console.log('resolved')
+
+          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
+        }
+      })
+}else{
+
+}
+
+//Event listener for movie nodes
 ref.orderByKey().on("child_added", function(snapshot) {
-  console.log(snapshot.key);
-  console.log(snapshot.val())
-  console.log(snapshot.title);
+  // console.log(snapshot.key);
+  // console.log(snapshot.val())
+  // console.log(snapshot.title);
 
   var item ={
     name: snapshot.val().name,
@@ -79,9 +114,9 @@ ref.orderByKey().on("child_added", function(snapshot) {
   newRow.append(textContainer)
   newRow.append('<hr class="movie-page-hr-break">')
 
-  console.log(item.id);
-  console.log(item.name);
-  console.log(item.posterDynamic);
+  // console.log(item.id);
+  // console.log(item.name);
+  // console.log(item.posterDynamic);
   $('.movie-container').append(newRow)
 });
 

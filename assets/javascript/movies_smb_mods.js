@@ -19,14 +19,8 @@ var refMovies = firebase.database().ref('/movies/');
 
 var key = localStorage.getItem('key')
 
-// var theaterRef = database.ref("/users/" + key);
-// theaterRef.orderByValue().on("value", function(snapshot) {
-//     console.log(snapshot.val().user_theatres[0].id);
-//   });
-
 var user_theaters
 var user_prefences
-
 
 var numMovies = 0;
 var moviesArr = [];
@@ -53,9 +47,6 @@ if(key !== null){
           user_theaters = sv.user_theatres
           user_preferences = sv.user_preferences
 
-          $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
-          $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
-          $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
           resolve(true)  
         })    
       })
@@ -92,8 +83,8 @@ if(key !== null){
                 var theaterPreferencesContainer = $('<div>').addClass("row")
                 
                 var reviewHeader = $('<div>').addClass("row kick-right")
-                var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
-                var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
+                var criticReview = $('<div>').addClass("col s4 grey darken-2 reviews-div")
+                var userReview = $('<div>').addClass("col s4 grey darken-2 reviews-div")
                 var image = $('<img>')
                 image.height(300).width(200)
                 image.attr('src', item.poster)
@@ -109,26 +100,25 @@ if(key !== null){
                 imgContainer.append(reviewHeader)
 
                 for (var i = 1; i < 4; i++) {
-                  var individualTheater = $('<div>').addClass("col s3")
+                  var individualTheater = $('<div>').addClass("col s3 theater-name")
                   individualTheater.attr('id', "_theater_" + i)
                   individualTheater.addClass("theater" + i)
                   individualTheater.html("<h5>Theater " + i + "</h5>")
-                  // individualTheater.html("<h5>Theater " + user_theaters[i-1].name + "</h5>")
                   theaterListing.append(individualTheater)
                 } 
                 
 
-                console.log(user_theaters)
+                // console.log(user_theaters)
                 for (var i = 1; i < 4; i++) {
                   var niceMovieName = item.name.toLowerCase();
                   niceMovieName = niceMovieName.replace(/ /g , "-")
                   niceMovieName = niceMovieName.replace(/'/g,"-")
-                  var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
+                  var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-2 theater-pref-div")
                   theaterPreferencesBucket.attr('id', niceMovieName + "_theater_" + user_theaters[i-1].id)
                   theaterPreferencesBucket.addClass("theaterDiv" + i)
                   var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
                   purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
-                  theaterPreferencesBucket.text("Preferences Listing " + i)
+                  theaterPreferencesBucket.html("<h6>Available Amenities</h6><br>")
                   theaterPreferencesBucket.append(purchaseButton)
                   theaterPreferencesContainer.append(theaterPreferencesBucket)
                 } 
@@ -142,10 +132,12 @@ if(key !== null){
                 newRow.append(textContainer)
                 newRow.append('<hr class="movie-page-hr-break">')
 
-                // console.log(item.id);
-                // console.log(item.name);
-                // console.log(item.posterDynamic);
                 $('.movie-container').append(newRow)
+
+                $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
+                $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
+                $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
+
                 resolve(true)
               })
             })
@@ -160,22 +152,19 @@ if(key !== null){
                   var niceMovieName = moviesArr[i].toLowerCase();
                   niceMovieName = niceMovieName.replace(/ /g , "-")
                   niceMovieName = niceMovieName.replace(/'/g,"-")
-                  console.log(niceMovieName);
+
                   //Iterate over theaters
                   for (var j = 1; j <= user_theaters.length; j++){
-                    var theaterAndMovieProperties = [];
-                    var requests = [];
-                    var counter = j
+
                     var req = $.ajax({
                        url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/" +
                        user_theaters[j-1].id + "/movies/" + movieIDArr[i] + "/earliest-showtime",
                        headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
                        type: "GET"
                     }).done(function (resp){
-                      console.log(resp)
 
                       var workingMovieID = resp.theatreId
-                      console.log(workingMovieID)
+
                       var workingMovieVar = resp.movieName.toLowerCase()
                       workingMovieVar = workingMovieVar.replace(/ /g, "-")
                       workingMovieVar = workingMovieVar.replace(/'/g, "-")
@@ -185,10 +174,73 @@ if(key !== null){
 
                         for (var k = 0; k < user_preferences.length; k++){
                           if (user_preferences[k] === prefChecker) {
-                            $("#" + workingMovieVar + "_theater_" + workingMovieID).append(user_preferences[k] + "<br>")
+                            // $("#" + workingMovieVar + "_theater_" + workingMovieID).append(user_preferences[k] + "<br><br>")
                             var buildID = workingMovieVar + "_theater_" + workingMovieID
-                            console.log(user_preferences[k])
-                            console.log(buildID)
+
+                              var reservedIcon = $('<img>')
+                              reservedIcon.height(60).width(60).attr("src","assets/images/reserved.png");
+                              reservedIcon.addClass("reservedseating")
+
+                              var alcoholIcon = $('<img>')
+                              alcoholIcon.height(60).width(60).attr("src","assets/images/alcohol.png");
+                              alcoholIcon.addClass("alcoholcardingpolicy")
+
+                              var closedCaptionIcon = $('<img>')
+                              closedCaptionIcon.height(50).width(60).attr("src","assets/images/closed-caption.png");
+                              closedCaptionIcon.addClass("closedcaption")
+
+                              var imax3DIcon = $('<img>')
+                              imax3DIcon.height(30).width(30).attr("src","assets/images/3d.png");
+                              imax3DIcon.addClass("imax3d")
+
+                              var imaxIcon = $('<img>')
+                              imaxIcon.height(30).width(60).attr("src","assets/images/imax-logo.png");
+                              imaxIcon.addClass("imax")
+
+                              var realD3dIcon = $('<img>')
+                              realD3dIcon.height(20).width(60).attr("src","assets/images/reald-3d-logo.png");
+                              realD3dIcon.addClass("reald3d")
+
+                              var recliningSeatIcon = $('<img>')
+                              recliningSeatIcon.height(60).width(60).attr("src","assets/images/reclining-seat-logo.png");
+                              recliningSeatIcon.addClass("reclinerseating")
+
+                              if (user_preferences[k] === "reservedseating") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(reservedIcon) 
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>") 
+                              }
+
+                              if (user_preferences[k] === "alcoholcardingpolicy") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(alcoholIcon) 
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>") 
+                              }
+
+                              if (user_preferences[k] === "closedcaption") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(closedCaptionIcon) 
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>") 
+                              }
+
+                              if (user_preferences[k] === "imax3d") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(imaxIcon)
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>")  
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(imax3DIcon)
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>")  
+                              }
+
+                              if (user_preferences[k] === "imax") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(imaxIcon)
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br><br>")   
+                              }
+
+                              if (user_preferences[k] === "reald3d") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(realD3dIcon) 
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>") 
+                              }
+
+                              if (user_preferences[k] === "reclinerseating") {
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append(recliningSeatIcon)
+                                $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>")  
+                              }
                           }
                         }
                       })
@@ -205,16 +257,7 @@ if(key !== null){
 } else {
   console.log("Null Key!  No user!")
 }
-// scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
-//   snapshot.forEach(function(data) {
-//     console.log("The " + data.key + " score is " + data.val());
-//   });
-// });
 
-//https://www.amctheatres.com/movies/ready-player-one-48972/showtimes/ready-player-one-48972/4-18-2018/amc-metreon-16/all
-// var movieId = ""
-// var movieTitle = ""
-// var theatreLongName = ""
 var todaysDate = moment().format('MM-DD-YY')
 var href = ""
 
@@ -231,8 +274,7 @@ function generatePurchaseLink(movieTitle, movieId, theatreLongName){
   var href = "http://www.amctheaters.com/movies/";
   href += movieTitleAndID + "/showtimes/" + movieTitleAndID;
   href += "/" + todaysDate + "/" + theatreLongName + "/all";
-  // console.log(href);
-  // "window.location.href='http://www.hyperlinkcode.com/button-links.php'"
+
   return `window.location.href='${href}'`;
 }
 
@@ -242,105 +284,11 @@ $.ajax({
          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
          type: "GET",
          success: function(response) { 
-            // console.log(response);
-            // console.log(response.Runtime);
+
             $.each(response._embedded.showtimes,function(index,item){
-              // console.log("Begin purchasing section here")
-              // console.log(item.movieId)
-              // console.log(item.movieName)
-              // console.log(item.attributes.code);
             });
          }
       });
-
-
-//Set Ajax to GET movie data including Film Title, Film ID, Film Poster and Film MMPA Rating
-
-// $.ajax({
-//          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/movies/views/now-playing",
-//          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-//          type: "GET",
-//          success: function(response) { 
-//             console.log(response);
-//             console.log(response.Runtime);
-//             $.each(response._embedded.movies,function(index,item){
-//               var newRow = $('<div>').addClass("row")
-//               var emptyCol = $('<div>').addClass("col s1")
-//               var emptyRow = $('<div>').addClass("row")
-//               var imgContainer = $('<div>').addClass("col s3");
-//               var textContainer = $('<div>').addClass("col s8");
-//               var mpaaRating = $('<div>').addClass("row kick-right").append('Rating:' + item.mpaaRating)
-              
-//               var theaterListing = $('<div>').addClass("row")
-//               var theaterPreferencesContainer = $('<div>').addClass("row")
-              
-//               var reviewHeader = $('<div>').addClass("row kick-right")
-//               var criticReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
-//               var userReview = $('<div>').addClass("col s4 grey darken-3 reviews-div")
-//               var image = $('<img>')
-//               image.height(300).width(200)
-//               image.attr('src', item.media.posterDynamic)
-//               imgContainer.append('<h5>' + item.name + '</h5>')
-//               imgContainer.append(image)
-//               imgContainer.append(mpaaRating)
-             
-//               criticReview.html("Critic Review").addClass("center-align")
-//               userReview.html("User Review").addClass("center-align")
-//               attachScore(criticReview, userReview, item.name)
-//               reviewHeader.append(criticReview)
-//               reviewHeader.append(userReview)
-//               imgContainer.append(reviewHeader)
-
-//               for (var i = 1; i < 4; i++) {
-//                 var individualTheater = $('<div>').addClass("col s3")
-//                 individualTheater.html("<h5>Theater " + i + "</h5>")
-//                 theaterListing.append(individualTheater)
-//               } 
-              
-//               for (var i = 1; i < 4; i++) {
-//                 var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
-//                 var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
-//                 purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
-//                 theaterPreferencesBucket.text("Preferences Listing " + i)
-//                 theaterPreferencesBucket.append(purchaseButton)
-//                 theaterPreferencesContainer.append(theaterPreferencesBucket)
-//               } 
-
-//               textContainer.append(emptyRow)
-//               textContainer.append(theaterListing).addClass("center-align")
-//               textContainer.append(theaterPreferencesContainer).addClass("center-align")
-
-//               newRow.append(emptyCol)
-//               newRow.append(imgContainer)
-//               newRow.append(textContainer)
-//               newRow.append('<hr class="movie-page-hr-break">')
-
-//               console.log(item.id);
-//               console.log(item.name);
-//               console.log(item.media.posterDynamic);
-//               $('.movie-container').append(newRow)
-
-//             });
-//          }
-//       });
-
-//Set Ajax to GET movie and theater data (deprecated)
-
-// $.ajax({
-//          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/2325/movies/48972/earliest-showtime",
-//          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-//          type: "GET",
-//          success: function(response) { 
-//             console.log(response);
-//             console.log(response.purchaseUrl)
-//             console.log(response.Runtime);
-//             $.each(response.attributes,function(index,item){
-//               console.log(item.code);
-
-//             });
-//             console.log(response.purchaseUrl) 
-//          }
-//       });
 
 //API call to metacritic API to pull critic and user reviews
 
@@ -357,7 +305,7 @@ function attachScore(criticScore, userScore, filmName){
   var userScoreNum = 0;
 
   $.ajax({
-    // url: metaCriticQueryURL + "/" + queryFilmName + "/movie?limit=20",
+
      url: metaCriticMovieURL + "/" + queryFilmName,
     headers: {
       "X-Mashape-Key": "UtlmLLXlvBmshzFE1DlVAFtq0Yp3p1z5KLqjsnTtLyKhWYrWgd",
@@ -386,7 +334,6 @@ function attachScore(criticScore, userScore, filmName){
         userScoreNum = response[0].Rating.UserRating;
         userScore.append("<br><h6>" + userScoreNum + "/10</h6>")
       }
-      // console.log("Score : " + filmScoreNum)
       }
   });
 }

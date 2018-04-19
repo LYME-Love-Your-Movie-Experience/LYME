@@ -30,6 +30,10 @@ var userURL = ""
 var queryURL = "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/";
 
 $(document).ready(function(){
+  $('#success-modal').modal();
+  $('#help-modal').modal();
+  $('#help-modal').modal('open');
+
   // console.log(localStorage.getItem('key'))
   const TO_NAME = 1;
   const TO_ABBREVIATED = 2;

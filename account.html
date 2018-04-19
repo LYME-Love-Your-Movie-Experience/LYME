@@ -71,7 +71,7 @@
               <input id="city_name" type="text" class="validate">
               <label for="city">City</label>
             </div>
-            <div class="input-field col s6 grey-text text-lighten-5">
+            <div class="input-field col s6">
               <select id="state-picker" class="state-picker">
                 <option value="" disabled selected>State</option>
               </select>
@@ -83,9 +83,10 @@
       <div class="row">
         <div class="col s12 grey-text text-lighten-5">
           <h5>Preferences</h5>
+          <p>By sharing with us your preferences, we help you find only the movies that match your viewing experience.  Use the dropdown menus below to save your preferences for all future movie searches.</p>
         </div>
         <div class="input-field col s8 grey-text text-lighten-5">
-          <select id="preference_one" class="preference_header">
+          <select id="preference_one" class="preference_header ">
             <option value="" disabled selected>Preference No. 1</option>
           </select>
         </div>
@@ -135,9 +136,6 @@
   <script>
     $(document).ready(function(){
       $('select').formSelect();
-      $('#success-modal').modal();
-      $('#help-modal').modal();
-      $('#help-modal').modal('open');
     })
   </script>
       

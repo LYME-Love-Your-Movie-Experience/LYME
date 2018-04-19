@@ -15,18 +15,69 @@ var config = {
 firebase.initializeApp(config);
 
 var database =  firebase.database();
-var ref = firebase.database().ref('/movies/');
+var refMovies = firebase.database().ref('/movies/');
 
 var key = localStorage.getItem('key')
+
 var user_theaters
 var user_prefences
 
+if(key !== null){  
+    console.log(key, typeof key)
+    function getUser(key){
+      return new Promise(function(resolve, reject) {
+        var ref = firebase.database().ref('users/' + key)
+        // console.log(ref)
+        console.log('about to query')
+        ref.on('value', function(snapshot) {
+          sv = snapshot.val()
+          user_theaters = sv.user_theatres
+          user_preferences = sv.user_preferences
+          console.log(user_theaters[0].name)
+          $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
+          $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
+          $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
+
+          console.log(user_theaters, user_preferences)
+          resolve(true)  
+        })    
+      })
+    }
+
+    getUser(key)
+      .then(function(valid) {
+        if (valid) {
+          console.log('resolved')
+          for (var i = 0; i < )
+          // for (var i = 0; i < user_theaters.length; i++){
+          //   for (var j = 0; j < user_preferences.length; j++){
+
+          //   }
+          // }
+          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
+          $.ajax({
+             url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/user_theaterstheatres/2325/movies/48972/earliest-showtime",
+             headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
+             type: "GET",
+             success: function(response) { 
+                // console.log(response);
+                // console.log(response.purchaseUrl)
+                // console.log(response.Runtime);
+                $.each(response.attributes,function(index,item){
+                  console.log(item.code);
+
+                });
+                      // console.log(response.purchaseUrl) 
+             }
+          });
+        }
+      })
+} else {
+  console.log("Null Key!  No user!")
+}
 
 //Event listener for movie nodes
-ref.orderByKey().on("child_added", function(snapshot) {
-  // console.log(snapshot.key);
-  // console.log(snapshot.val())
-  // console.log(snapshot.title);
+refMovies.orderByKey().on("child_added", function(snapshot) {
 
   var item ={
     name: snapshot.val().name,
@@ -36,6 +87,7 @@ ref.orderByKey().on("child_added", function(snapshot) {
   }
 
   var newRow = $('<div>').addClass("row")
+  newRow.attr('id', item.name)
   var emptyCol = $('<div>').addClass("col s1")
   var emptyRow = $('<div>').addClass("row")
   var imgContainer = $('<div>').addClass("col s3");
@@ -64,13 +116,19 @@ ref.orderByKey().on("child_added", function(snapshot) {
 
   for (var i = 1; i < 4; i++) {
     var individualTheater = $('<div>').addClass("col s3")
+    individualTheater.attr('id', "_theater_" + i)
     individualTheater.addClass("theater" + i)
     individualTheater.html("<h5>Theater " + i + "</h5>")
+    // individualTheater.html("<h5>Theater " + user_theaters[i-1].name + "</h5>")
     theaterListing.append(individualTheater)
   } 
   
   for (var i = 1; i < 4; i++) {
+    var niceMovieName = item.name.toLowerCase();
+    niceMovieName = niceMovieName.replace(/ /g , "-")
+    niceMovieName = niceMovieName.replace(/'/g,"-")
     var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-3 theater-pref-div")
+    theaterPreferencesBucket.attr('id', niceMovieName + "_theater_" + i)
     var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
     purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
     theaterPreferencesBucket.text("Preferences Listing " + i)
@@ -93,39 +151,6 @@ ref.orderByKey().on("child_added", function(snapshot) {
   $('.movie-container').append(newRow)
 });
 
-if(key !== null){  
-    console.log(key, typeof key)
-    function getUser(key){
-      return new Promise(function(resolve, reject) {
-        var ref = firebase.database().ref('users/' + key)
-        // console.log(ref)
-        // console.log('about to query')
-        ref.on('value', function(snapshot) {
-          sv = snapshot.val()
-          user_theaters = sv.user_theatres
-          user_preferences = sv.user_preferences
-          console.log(user_theaters[0].name)
-          $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
-          $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
-          $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
-
-          console.log(user_theaters, user_preferences)
-          resolve(true)  
-        })    
-      })
-    }
-
-    getUser(key)
-      .then(function(valid) {
-        if (valid) {
-          console.log('resolved')
-
-          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
-        }
-      })
-}else{
-
-}
 // scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
 //   snapshot.forEach(function(data) {
 //     console.log("The " + data.key + " score is " + data.val());
@@ -247,21 +272,7 @@ $.ajax({
 
 //Set Ajax to GET movie and theater data (deprecated)
 
-// $.ajax({
-//          url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/2325/movies/48972/earliest-showtime",
-//          headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-//          type: "GET",
-//          success: function(response) { 
-//             console.log(response);
-//             console.log(response.purchaseUrl)
-//             console.log(response.Runtime);
-//             $.each(response.attributes,function(index,item){
-//               console.log(item.code);
 
-//             });
-//             console.log(response.purchaseUrl) 
-//          }
-//       });
 
 //API call to metacritic API to pull critic and user reviews
 

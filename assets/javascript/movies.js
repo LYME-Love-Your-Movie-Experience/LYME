@@ -27,6 +27,17 @@ var numMovies = 0;
 var moviesArr = [];
 var movieIDArr = [];
 
+class showing{
+  constructor(movieName, theaterName, movieID, movieProperties){
+    this.movieName = movieName;
+    this.theaterName = theaterName;
+    this.movieID = movieID;
+    this.movieProperties = movieProperties;
+  }
+}
+
+var ArrayOfShowings = []
+
 //Event listener for movie nodes
 refMovies.orderByKey().on("child_added", function(snapshot) {
 
@@ -136,40 +147,49 @@ if(key !== null){
           console.log('resolved')
           //Iterate over all movies
           for (var i = 0; i < numMovies; i++){
+            
             var niceMovieName = moviesArr[i].toLowerCase();
             niceMovieName = niceMovieName.replace(/ /g , "-")
             niceMovieName = niceMovieName.replace(/'/g,"-")
             console.log(niceMovieName);
             //Iterate over theaters
-            for (var wtf = 1; wtf <= user_theaters.length; wtf++){
-              console.log("wtf is " + wtf)
+            for (var j = 1; j <= user_theaters.length; j++){
+              var theaterAndMovieProperties = [];
+              var requests = [];
               var req = $.ajax({
                  url: "https://cors-anywhere.herokuapp.com/https://api.amctheatres.com/v2/theatres/" +
-                 user_theaters[wtf-1].id + "/movies/" + movieIDArr[i] + "/earliest-showtime",
+                 user_theaters[j-1].id + "/movies/" + movieIDArr[i] + "/earliest-showtime",
                  headers: {"X-AMC-Vendor-Key":"3E9F23B5-8BE9-4DD1-854D-204A9F3138FB"},
-                 type: "GET",
-                 success: function(response) { 
-                    // console.log(response);
-                    // console.log(response.purchaseUrl)
-                    // console.log(response.Runtime);
-                    $.each(response.attributes,function(index,item){
-                      for (var k = 0; k < user_preferences.length; k++){
-                        // console.log("test " + user_preferences[k] + " against " + item.code)
-                        if (user_preferences[k] === item.code.toLowerCase()){
-                          console.log(item.code + ", match wtf is " + wtf);
-                          var buildID = niceMovieName + "_theater_";
-                          buildID += wtf;
-                          console.log(buildID);
-                          // $("#")
-                        }
-                      }
-                    });
-                          // console.log(response.purchaseUrl) 
-                 },
-                error : function(response){
-                  console.log("Need to put Unavailable")
-                }
+                 type: "GET"
+              }).done(function (resp){
+                $.each(resp.attributes,function(index,item){
+                  // console.log(item.code);
+                  theaterAndMovieProperties.push(item.code);
+                })
+              }).fail(function(jqXHR, status){
+                console.log("Fail" + jqXHR);
+                return;
               });
+              
+              requests.push(req);
+
+              $.when(requests).done(function() {
+                console.log("lol" + theaterAndMovieProperties.length)
+                for (var k = 0; k < user_preferences.length; k++){
+
+                  for (var l = 0; l < theaterAndMovieProperties.length; l++){
+                    console.log("test " + user_preferences[k] + " against " + item.code)
+                    if (user_preferences[k] === theaterAndMovieProperties[l].toLowerCase()){
+                      console.log(item.code + ", match j is " + j);
+                      var buildID = niceMovieName + "_theater_";
+                      buildID += j;
+                      console.log(buildID);
+                      // $("#")
+                    }
+                    
+                  }
+                }
+              })
 
             }
           }

@@ -21,34 +21,6 @@ var key = localStorage.getItem('key')
 var user_theaters
 var user_prefences
 
-if(key !== null){  
-    console.log(key, typeof key)
-    function getUser(key){
-      return new Promise(function(resolve, reject) {
-        var ref = firebase.database().ref('users/' + key)
-        // console.log(ref)
-        // console.log('about to query')
-        ref.on('value', function(snapshot) {
-          sv = snapshot.val()
-          user_theaters = sv.user_theatres
-          user_prefences = sv.user_preferences
-          console.log(user_theaters, user_prefences)
-          resolve(true)  
-        })    
-      })
-    }
-
-    getUser(key)
-      .then(function(valid) {
-        if (valid) {
-          console.log('resolved')
-
-          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
-        }
-      })
-}else{
-
-}
 
 //Event listener for movie nodes
 ref.orderByKey().on("child_added", function(snapshot) {
@@ -92,6 +64,7 @@ ref.orderByKey().on("child_added", function(snapshot) {
 
   for (var i = 1; i < 4; i++) {
     var individualTheater = $('<div>').addClass("col s3")
+    individualTheater.addClass("theater" + i)
     individualTheater.html("<h5>Theater " + i + "</h5>")
     theaterListing.append(individualTheater)
   } 
@@ -120,6 +93,39 @@ ref.orderByKey().on("child_added", function(snapshot) {
   $('.movie-container').append(newRow)
 });
 
+if(key !== null){  
+    console.log(key, typeof key)
+    function getUser(key){
+      return new Promise(function(resolve, reject) {
+        var ref = firebase.database().ref('users/' + key)
+        // console.log(ref)
+        // console.log('about to query')
+        ref.on('value', function(snapshot) {
+          sv = snapshot.val()
+          user_theaters = sv.user_theatres
+          user_preferences = sv.user_preferences
+          console.log(user_theaters[0].name)
+          $(".theater1").html("<h5>" + user_theaters[0].name + "</h5>")
+          $(".theater2").html("<h5>" + user_theaters[1].name + "</h5>")
+          $(".theater3").html("<h5>" + user_theaters[2].name + "</h5>")
+
+          console.log(user_theaters, user_preferences)
+          resolve(true)  
+        })    
+      })
+    }
+
+    getUser(key)
+      .then(function(valid) {
+        if (valid) {
+          console.log('resolved')
+
+          //PUT CODE FOR THE USER HERE, IN REGARDS TO CHECKING THEATERS AND PREFERENCES
+        }
+      })
+}else{
+
+}
 // scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
 //   snapshot.forEach(function(data) {
 //     console.log("The " + data.key + " score is " + data.val());

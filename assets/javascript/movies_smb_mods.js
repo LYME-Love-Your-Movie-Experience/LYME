@@ -113,11 +113,16 @@ if(key !== null){
                   var niceMovieName = item.name.toLowerCase();
                   niceMovieName = niceMovieName.replace(/ /g , "-")
                   niceMovieName = niceMovieName.replace(/'/g,"-")
+
+                  var niceTheaterName = user_theaters[i-1].name.toLowerCase();
+                  niceTheaterName = niceTheaterName.replace(/ /g , "-")
+                  niceTheaterName = niceTheaterName.replace(/'/g,"-")
+                  
                   var theaterPreferencesBucket = $('<div>').addClass("col s3 grey darken-2 theater-pref-div")
                   theaterPreferencesBucket.attr('id', niceMovieName + "_theater_" + user_theaters[i-1].id)
                   theaterPreferencesBucket.addClass("theaterDiv" + i)
                   var purchaseButton = $('<input type="button" value="Purchase"/>').addClass("red lighten-1 btn-small purchase-btn")
-                  purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, "amc-metreon-16"));
+                  purchaseButton.attr('onclick', generatePurchaseLink(item.name, item.id, niceTheaterName));
                   theaterPreferencesBucket.html("<h6>Available Amenities</h6><br>")
                   theaterPreferencesBucket.append(purchaseButton)
                   theaterPreferencesContainer.append(theaterPreferencesBucket)

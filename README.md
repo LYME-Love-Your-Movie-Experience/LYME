@@ -8,3 +8,5 @@ Look no further, this is the app for you!
 Start by setting up a user account.  All we need to know is your name, email, city & state, and what defines your ideal movie experience.
 
 Then, check out the movies page to see what latest showings match your preferences.  You can get a movie link that's customized to your locale and see which showings will get you to Love Your Movie Experience!
+
+https://lyme-love-your-movie-experience.github.io/LYME/movies

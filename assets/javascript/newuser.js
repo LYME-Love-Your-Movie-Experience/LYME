@@ -250,7 +250,7 @@ $(document).ready(function(){
             //Set local storage key, to the node key in the database, so we can access their preferences later
             localStorage.setItem('key', newUserRef.key)
 
-            $('success-modal').modal('open');
+            $('#success-modal').modal('open');
           })
     })
   })

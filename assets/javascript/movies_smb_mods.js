@@ -73,6 +73,9 @@ if(key !== null){
 
                 var newRow = $('<div>').addClass("row")
                 newRow.attr('id', item.name)
+                newRow.addClass('movieRow')
+                newRow.css('display', 'none')
+
                 var emptyCol = $('<div>').addClass("col s1")
                 var emptyRow = $('<div>').addClass("row")
                 var imgContainer = $('<div>').addClass("col s3");
@@ -245,10 +248,12 @@ if(key !== null){
                               if (user_preferences[k] === "reclinerseating") {
                                 $("#" + workingMovieVar + "_theater_" + workingMovieID).append(recliningSeatIcon)
                                 $("#" + workingMovieVar + "_theater_" + workingMovieID).append("<br>")  
-                              }
+                              }      
                           }
                         }
                       })
+                      $('.loader').css('display', 'none')
+                      $('.movieRow').css('display', 'initial')
                     })
                   }
                 }

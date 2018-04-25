@@ -28,9 +28,12 @@ $.ajax({
               var movieRating = item.mpaaRating
               var moviePoster = item.media.posterDynamic
 
-                var newMovie = {name: movieName, id: movieID, rating: movieRating, poster: moviePoster}
-                database.ref('/movies/').push(newMovie)
-
+              if(movieRating === undefined){
+                movieRating = 'N/A'
+              }
+              var newMovie = {name: movieName, id: movieID, rating: movieRating, poster: moviePoster}
+              database.ref('/movies/').push(newMovie)
+              
               // console.log(item.id);
               // console.log(item.name);
               // console.log(item.mpaaRating);
